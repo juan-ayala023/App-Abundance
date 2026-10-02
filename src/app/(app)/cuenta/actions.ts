@@ -1,6 +1,5 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import type { EstadoNombre } from "./estado";
@@ -90,10 +89,18 @@ export async function guardarNombre(
     return { nombre: null, error: await textoDeCuenta("nombreError") };
   }
 
-  /* El resto del portal también lo usa: las lecturas le hablan por su nombre. */
-  revalidatePath("/cuenta");
-  revalidatePath("/portal");
-
+  /*
+   * Sin `revalidatePath`, a propósito.
+   *
+   * Cualquier revalidación dentro de una acción hace que el router refresque
+   * la pantalla actual, y ese refresco competía con el estado que esta misma
+   * acción devuelve: unas veces ganaba uno y otras el otro, así que el nombre
+   * nuevo aparecía o no según el día. Lo delató una prueba intermitente.
+   *
+   * No hace falta: las pantallas que enseñan el nombre leen la sesión, así que
+   * son dinámicas y se vuelven a renderizar en la siguiente navegación. Lo que
+   * se ve aquí sale de lo que devuelve la base, que es la verdad.
+   */
   return { nombre: guardado.full_name, error: null };
 }
 

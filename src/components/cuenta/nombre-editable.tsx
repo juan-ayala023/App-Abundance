@@ -24,6 +24,15 @@ export function NombreEditable({ nombre }: { nombre: string }) {
   const t = useTranslations('cuenta')
   const [estado, guardar] = useActionState(guardarNombre, ESTADO_INICIAL)
   const [editando, setEditando] = useState(false)
+  /*
+   * El campo es controlado y no `defaultValue`.
+   *
+   * Con `defaultValue`, lo escrito vive solo en el DOM: si React vuelve a
+   * montar el campo mientras la acción está en vuelo —pasa cuando algo
+   * refresca la ruta—, el texto desaparece y el guardado se pierde sin que
+   * nadie vea un error. Teniéndolo en el estado, no hay nada que perder.
+   */
+  const [texto, setTexto] = useState(nombre)
 
   /* Al confirmarse el guardado, se vuelve a la vista de lectura. */
   useEffect(() => {
@@ -45,7 +54,10 @@ export function NombreEditable({ nombre }: { nombre: string }) {
           </div>
           <button
             type="button"
-            onClick={() => setEditando(true)}
+            onClick={() => {
+              setTexto(actual)
+              setEditando(true)
+            }}
             aria-label={t('cambiarNombre')}
             className="shrink-0 rounded-full border border-borde p-2 text-tinta-suave transition-colors hover:bg-fondo-hondo"
           >
@@ -77,7 +89,8 @@ export function NombreEditable({ nombre }: { nombre: string }) {
           type="text"
           required
           maxLength={80}
-          defaultValue={actual}
+          value={texto}
+          onChange={(evento) => setTexto(evento.target.value)}
           autoComplete="name"
           className="min-w-0 flex-1 rounded-xl border border-borde bg-fondo px-3 py-2"
         />
