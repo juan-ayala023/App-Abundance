@@ -115,9 +115,6 @@ export const lecturaGeneradaSchema = z.object({
   analisisCompleto: parrafo,
 })
 
-/** Solo las secciones nuevas: para completar una lectura anterior a ellas. */
-export const seccionesNuevasSchema = z.object(camposNuevos)
-
 /** Las claves de las secciones que se añadieron después. */
 export const CLAVES_NUEVAS = Object.keys(camposNuevos) as (keyof typeof camposNuevos)[]
 
@@ -153,7 +150,7 @@ export function esquemaDeTexto(claves: string[]) {
  * lo correcto: son de un día concreto, ya pasado. `asegurarActivacion()` las
  * reescribe si alguien vuelve a abrir ese día.
  */
-export const activacionDiariaSchema = z.object({
+const camposActivacion = {
   /** Frase de intriga. Es lo primero que se lee. */
   titular: parrafo,
   /** Qué podría pasar hoy y en qué área. Dos o tres frases. */
@@ -162,6 +159,28 @@ export const activacionDiariaSchema = z.object({
   senal: parrafo,
   evita: parrafo,
   activa: parrafo,
+}
+
+/**
+ * Lo que se le pide al modelo. **Sin `idioma`**, y no es un olvido.
+ *
+ * El modo estricto de OpenAI exige que todas las propiedades del esquema sean
+ * obligatorias y rechaza la llamada entera si una es opcional:
+ *
+ *   «'required' is required to be supplied and to be an array including every
+ *    key in properties. Missing 'idioma'.»
+ *
+ * Con el esquema de abajo —que sí lleva `idioma` opcional, porque valida lo
+ * guardado— la activación de cada día fallaba en producción desde que se
+ * reescribió, y la pantalla decía «tu lectura todavía no está lista» sin más.
+ * El idioma lo pone `asegurarActivacion()` al guardar, que es quien lo sabe.
+ *
+ * Es el mismo reparto que la lectura base: uno para generar, otro para leer.
+ */
+export const activacionGeneradaSchema = z.object(camposActivacion)
+
+export const activacionDiariaSchema = z.object({
+  ...camposActivacion,
   /** En qué idioma se escribió. Si falta, español (anterior al cambio). */
   idioma: idiomaContenido.optional(),
 })

@@ -9,7 +9,7 @@ import type { Idioma } from '@/i18n/idioma'
 import { CONTROL_CALIDAD, LEXICO_MARCA, LIMITES_PRONOSTICO, vozComun } from '@/lib/lectura/voz'
 import type { Carta } from '@/lib/astrology/types'
 
-import { activacionDiariaSchema, type ActivacionDiaria } from './schemas'
+import { activacionGeneradaSchema, type ActivacionDiaria } from './schemas'
 
 /**
  * Escribe la activación de un día.
@@ -109,7 +109,7 @@ export async function generarActivacionDiaria(entrada: {
   try {
     const { object, usage } = await generateObject({
       model: modelo(MODELO_RAPIDO),
-      schema: activacionDiariaSchema,
+      schema: activacionGeneradaSchema,
       system: sistema(entrada.idioma, entrada.nombre?.trim() || null),
       prompt,
       // Texto corto y muy pautado: razonar mucho aquí no mejora el resultado y
