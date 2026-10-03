@@ -346,7 +346,7 @@ test('cómo le hablan las lecturas se cambia desde Mi Cuenta', async ({ page }) 
   await expect(page.getByText(/se aplica a tus próximas lecturas/i)).toBeVisible()
 })
 
-test('el nombre se cambia solo; la fecha de nacimiento pasa por soporte', async ({ page }) => {
+test('el nombre y la fecha de nacimiento se cambian desde Mi Cuenta', async ({ page }) => {
   await completarOnboarding(page)
   await page.goto('/cuenta')
 
@@ -363,30 +363,47 @@ test('el nombre se cambia solo; la fecha de nacimiento pasa por soporte', async 
    */
   await expect(page.getByText('Persona corregida')).toBeVisible({ timeout: 15_000 })
 
-  // El nacimiento: se solicita, no se edita.
-  await page.getByRole('link', { name: 'Solicitar una corrección' }).click()
-  await expect(page).toHaveURL(/\/cuenta\/correccion/)
-  await expect(page.getByRole('heading', { name: 'Solicitar una corrección' })).toBeVisible()
-
-  await page.getByLabel('Lo correcto').fill('16 de junio de 1992 · 09:30 · Bogotá, Colombia')
-  await page.getByLabel(/Confirmo que son mis propios datos/).check()
-  await page.getByRole('button', { name: 'Enviar mi solicitud' }).click()
-
-  await expect(page.getByRole('heading', { name: 'Solicitud recibida' })).toBeVisible()
-
   /*
-   * Y lo que de verdad importa: no ha cambiado nada. La carta sigue siendo la
-   * del 15 de junio, que es lo que la solicitud existe para no romper.
+   * El nacimiento también se corrige desde aquí, y eso es nuevo.
+   *
+   * Hasta el 3 de octubre de 2026 este enlace llevaba a una solicitud por
+   * correo: la persona veía mal su propia fecha y tenía que esperar a que
+   * alguien la leyera. Ahora lo arregla ella; lo que protegía aquella regla lo
+   * protegen el archivo de la lectura anterior y el aviso de la pantalla.
    */
+  await page.getByRole('link', { name: 'Corregir mis datos' }).click()
+  await expect(page).toHaveURL(/\/onboarding/)
+
+  // Lo guardado viene puesto: una corrección cambia un dato, no todos.
+  await expect(page.getByLabel('Día')).toHaveValue('15')
+  await page.getByLabel('Día').fill('16')
+
+  await page.getByRole('button', { name: 'Continuar' }).click()
+  await page.getByRole('button', { name: 'Guardar cambios' }).click()
+
+  /* Cambiar el nacimiento recalcula la carta, así que termina en /generando. */
+  await expect(page).toHaveURL(/\/generando/, { timeout: 30_000 })
+
   await page.goto('/cuenta')
-  await expect(page.getByText(/15 de junio de 1992/)).toBeVisible()
+  await expect(page.getByText(/16 de junio de 1992/)).toBeVisible()
 })
 
-test('con carta calculada, el formulario de alta ya no corrige el nacimiento', async ({ page }) => {
+test('con carta calculada, el formulario de alta sí corrige el nacimiento', async ({ page }) => {
+  /*
+   * Lo contrario de lo que afirmaba esta misma prueba hasta el 3 de octubre de
+   * 2026, y a propósito: entonces rebotaba a la solicitud por soporte.
+   *
+   * El freno de una corrección al día no se ve aquí, y es correcto que no se
+   * vea: cuelga de que haya una lectura escrita que archivar, y estas pruebas
+   * corren sin clave de IA, así que no hay ninguna. Quien no tiene nada escrito
+   * no tiene nada que proteger. El freno se prueba aparte, en `correccion.test`.
+   */
   await completarOnboarding(page)
 
   await page.goto('/onboarding?editar=1')
-  await expect(page).toHaveURL(/\/cuenta\/correccion/)
+  await expect(page).toHaveURL(/\/onboarding/)
+  await expect(page.getByRole('heading', { name: 'Corregir mis datos de nacimiento' })).toBeVisible()
+  await expect(page.getByLabel('Día')).toHaveValue('15')
 })
 
 test('generando dice los pasos y el plazo, sin barra que no avanza', async ({ page }) => {

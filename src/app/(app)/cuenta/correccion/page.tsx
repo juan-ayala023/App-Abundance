@@ -20,7 +20,15 @@ export const generateMetadata = tituloDePagina('correccion')
  * pasar por un clic. Se registra la petición y alguien la mira; hasta
  * entonces, la persona conserva todo lo que tiene.
  */
-export default async function CorreccionPage() {
+export default async function CorreccionPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>
+}) {
+  /* Se llega aquí por dos caminos distintos y conviene no confundirlos: o se
+   * pide ayuda por gusto, o se acaba de corregir y toca esperar un día. */
+  const espera = (await searchParams).espera !== undefined
+
   const supabase = await createClient()
 
   const { data: portal } = await supabase
@@ -51,6 +59,12 @@ export default async function CorreccionPage() {
         descripcion={t('descripcion')}
         volver={{ href: '/cuenta', texto: tNav('volverACuenta') }}
       />
+
+      {espera ? (
+        <Tarjeta className="border-oro/60 text-sm leading-relaxed text-tinta-suave">
+          {t('recienCorregido')}
+        </Tarjeta>
+      ) : null}
 
       <Tarjeta className="bg-oro-palido/40 text-sm leading-relaxed text-tinta-suave">
         {t('queVaAPasar')}

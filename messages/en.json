@@ -139,7 +139,8 @@
       "femenino": "Feminine",
       "masculino": "Masculine",
       "sin-decir": "No gender marked"
-    }
+    },
+    "corregirDatos": "Correct my details"
   },
   "correccion": {
     "titulo": "Request a correction",
@@ -160,7 +161,8 @@
     "volver": "Back to My Account",
     "faltanDatos": "Fill in both details and confirm they're yours.",
     "sinSesion": "Your session expired. Please sign in again.",
-    "error": "We couldn't register your request. Please try again in a few minutes."
+    "error": "We couldn't register your request. Please try again in a few minutes.",
+    "recienCorregido": "You've just corrected your details, so you can't change them yourself again for now: it's once a day. If something needs fixing sooner, tell us here and we'll do it."
   },
   "portal": {
     "bienvenida": "Welcome to your Portal",
@@ -658,7 +660,8 @@
       "descripcion": "Review and change what needs changing. What you see is what is saved right now.",
       "aviso": "If you change the <b>date, time or place</b>, your chart is recalculated and your base reading and portrait are written again over the new chart. <b>The previous versions are not lost</b>: they are kept and you can re-read them in your reading and your chart. Your guide questions are preserved. If you only change the name, nothing is rewritten.",
       "guardar": "Save changes",
-      "cancelar": "Back to My Account without changing anything"
+      "cancelar": "Back to My Account without changing anything",
+      "espera": "You corrected your details recently. You'll be able to do it again from {cuando}. If you need to change them sooner, write to us and we'll do it."
     },
     "genero": "How would you like us to address you?",
     "generoAyuda": "Your readings speak to you directly, and this decides whether they do it in the feminine, the masculine or without marking gender. You can change it any time.",

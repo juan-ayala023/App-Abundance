@@ -229,10 +229,10 @@ export default async function CuentaPage({
             y alguien lo mira.
           */}
           <Link
-            href="/cuenta/correccion"
+            href="/onboarding?editar"
             className="rounded-xl border border-borde bg-superficie px-5 py-2.5 text-sm font-medium transition-colors hover:bg-fondo-hondo"
           >
-            {t("solicitarCorreccion")}
+            {t("corregirDatos")}
           </Link>
         </Tarjeta>
       ) : null}

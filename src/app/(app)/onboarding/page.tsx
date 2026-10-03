@@ -5,7 +5,8 @@ import { redirect } from 'next/navigation'
 import { FormularioNacimiento } from '@/components/onboarding/formulario-nacimiento'
 import type { Place } from '@/lib/geo/types'
 import { generoParaLaVoz } from '@/lib/lectura/genero'
-import { createClient } from '@/lib/supabase/server'
+import { esperaParaCorregir } from '@/lib/lectura/correccion'
+import { createAdminClient, createClient } from '@/lib/supabase/server'
 import { tituloDePagina } from '@/i18n/titulo'
 
 export const generateMetadata = tituloDePagina('onboarding')
@@ -27,7 +28,7 @@ export default async function OnboardingPage({
   const { data: portal } = await supabase
     .from('portals')
     .select(
-      'full_name, genero, birth_date, birth_time, time_unknown, birth_city, birth_country, lat, lng, tz, chart',
+      'id, full_name, genero, birth_date, birth_time, time_unknown, birth_city, birth_country, lat, lng, tz, chart',
     )
     .maybeSingle()
 
@@ -45,16 +46,22 @@ export default async function OnboardingPage({
   const editando = Boolean(portal?.birth_date) && params.editar !== undefined
 
   /*
-   * Corregir aquí solo mientras no haya carta.
+   * Corregir aquí, uno mismo.
    *
-   * El documento del 23 de septiembre pide que la fecha, la hora y el lugar no
-   * se recalculen solos: al cambiarlos se invalida la carta y se archivan la
-   * lectura base y el retrato, y eso no puede depender de un clic. Pero cuando
-   * la carta **no se pudo calcular** —una combinación de datos imposible— no
-   * hay nada que invalidar y sí algo que arreglar; mandar a esa persona a
-   * soporte sería dejarla sin producto esperando un correo.
+   * Hasta el 3 de octubre de 2026 esta pantalla rebotaba a `/cuenta/correccion`
+   * en cuanto había carta: el documento de septiembre pidió que la fecha, la
+   * hora y el lugar pasaran por soporte. Sonaba prudente y era un callejón —
+   * la persona veía mal su propia fecha y tenía que esperar a que alguien
+   * leyera un correo para arreglar un dedazo suyo.
+   *
+   * Ahora lo hace ella. Lo que protegía aquella regla sigue protegido por otro
+   * lado: la lectura anterior se archiva y se puede releer, el aviso de abajo
+   * dice en claro lo que se va a reescribir, y no se puede cambiar dos veces
+   * el mismo día. Pasado ese límite se vuelve a la solicitud por soporte, que
+   * sigue existiendo.
    */
-  if (editando && portal?.chart) redirect('/cuenta/correccion')
+  const espera = portal?.chart ? await esperaParaCorregir(createAdminClient(), portal.id) : null
+  if (editando && espera) redirect('/cuenta/correccion?espera=1')
 
   if (portal?.birth_date && !editando) redirect('/portal')
 

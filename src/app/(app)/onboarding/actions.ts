@@ -3,6 +3,7 @@
 import { redirect } from 'next/navigation'
 
 import { asegurarCarta, COLUMNAS_CARTA } from '@/lib/astrology/portal'
+import { esperaParaCorregir } from '@/lib/lectura/correccion'
 import { COLUMNAS_PARA_RETIRAR, retirarLecturas } from '@/lib/lectura/retirar'
 import { resolveBirthInstant, BirthInstantError } from '@/lib/time/birth-instant'
 import { createAdminClient, createClient } from '@/lib/supabase/server'
@@ -95,6 +96,25 @@ export async function guardarDatosNacimiento(
     Number(anterior.lng) !== datos.place.lng ||
     anterior.tz !== datos.place.tz
 
+  /*
+   * El freno, donde cuenta.
+   *
+   * La pantalla ya desvía a soporte a quien corrigió hace poco, pero eso es
+   * una comodidad de la interfaz: lo que impide de verdad el bucle es esta
+   * comprobación, que ocurre en el servidor y solo cuando el nacimiento cambia
+   * —cambiar solo el nombre o el género no reescribe nada, así que no gasta
+   * ninguna corrección.
+   */
+  if (nacimientoCambio && anterior) {
+    const espera = await esperaParaCorregir(createAdminClient(), anterior.id)
+    if (espera) {
+      return {
+        error: await textoDeEspera(espera),
+        campos: {},
+      }
+    }
+  }
+
   if (editando && anterior && !nacimientoCambio) {
     const { error } = await supabase
       .from('portals')
@@ -177,6 +197,22 @@ export async function guardarDatosNacimiento(
    * 17 sept 2026). /generando manda a /lectura-base si ya existe.
    */
   redirect('/generando')
+}
+
+/** «Podrás volver a corregirlos a partir de las 18:40 de mañana». */
+async function textoDeEspera(hasta: Date): Promise<string> {
+  const { getTranslations } = await import('next-intl/server')
+  const { idiomaActual } = await import('@/i18n/idioma')
+  const idioma = await idiomaActual()
+  const t = await getTranslations('onboarding')
+  return t('editar.espera', {
+    cuando: new Intl.DateTimeFormat(idioma === 'en' ? 'en-GB' : 'es-ES', {
+      day: 'numeric',
+      month: 'long',
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(hasta),
+  })
 }
 
 /** `time` de Postgres llega como `HH:MM:SS`; el formulario manda `HH:MM`. */

@@ -139,7 +139,8 @@
       "femenino": "En femenino",
       "masculino": "En masculino",
       "sin-decir": "Sin marcar género"
-    }
+    },
+    "corregirDatos": "Corregir mis datos"
   },
   "correccion": {
     "titulo": "Solicitar una corrección",
@@ -160,7 +161,8 @@
     "volver": "Volver a Mi Cuenta",
     "faltanDatos": "Completa los dos datos y confirma que son tuyos.",
     "sinSesion": "Tu sesión expiró. Vuelve a entrar.",
-    "error": "No pudimos registrar tu solicitud. Vuelve a intentarlo en unos minutos."
+    "error": "No pudimos registrar tu solicitud. Vuelve a intentarlo en unos minutos.",
+    "recienCorregido": "Acabas de corregir tus datos, así que por ahora no puedes volver a cambiarlos tú: se puede una vez al día. Si hay algo que arreglar antes, cuéntanoslo aquí y lo hacemos nosotros."
   },
   "portal": {
     "bienvenida": "Te damos la bienvenida a tu portal",
@@ -658,7 +660,8 @@
       "descripcion": "Revisa y cambia lo que haga falta. Lo que ves es lo que hay guardado ahora.",
       "aviso": "Si cambias la <b>fecha, la hora o el lugar</b>, tu carta se recalcula y tu lectura base y tu retrato se vuelven a escribir sobre la carta nueva. <b>Las versiones anteriores no se pierden</b>: quedan guardadas y las puedes releer en tu lectura y en tu carta. Tus consultas de guía se conservan. Si solo cambias el nombre, nada se vuelve a escribir.",
       "guardar": "Guardar cambios",
-      "cancelar": "Volver a Mi Cuenta sin cambiar nada"
+      "cancelar": "Volver a Mi Cuenta sin cambiar nada",
+      "espera": "Ya corregiste tus datos hace poco. Podrás volver a hacerlo a partir del {cuando}. Si necesitas cambiarlos antes, escríbenos y lo hacemos nosotros."
     },
     "genero": "¿Cómo prefieres que te hablemos?",
     "generoAyuda": "Tus lecturas te hablan de tú, y esto decide si lo hacen en femenino, en masculino o sin marcar género. Puedes cambiarlo cuando quieras.",
