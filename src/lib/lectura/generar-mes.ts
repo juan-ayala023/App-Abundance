@@ -13,7 +13,14 @@ import type { Idioma } from '@/i18n/idioma'
 
 import { completarSecciones } from './completar'
 import { instruccionDeIdioma } from './idioma-prompt'
-import { esquemaDeTexto, mesGeneradoSchema, type MesTexto } from './schemas'
+import {
+  esquemaDeTexto,
+  mesAreasSchema,
+  mesFechasSchema,
+  mesGeneradoSchema,
+  mesHistoriaSchema,
+  type MesTexto,
+} from './schemas'
 import { CONTROL_CALIDAD, LEXICO_MARCA, LIMITES_PRONOSTICO, nombreDePila, vozComun } from './voz'
 
 /**
@@ -97,29 +104,89 @@ export async function generarMes(entrada: {
     '',
     describirDiasSenalados(entrada.dias),
     '',
-    `Escribe la lectura del mes completa. En "diasImportantes", una entrada por cada ventana (${
+  ].join('\n')
+
+  /*
+   * Tres llamadas a la vez, no una larga.
+   *
+   * De una sola vez eran 102 segundos medidos para 1.450 palabras: casi dos
+   * minutos de espera después de pulsar un botón. Partida en tres, la espera
+   * es la del trozo más lento. Cada uno recibe la misma carta y el mismo
+   * calendario, así que los tres hablan del mismo mes.
+   */
+  const encargos = {
+    historia:
+      'Escribe SOLO la historia del mes: el titular, el tema principal, qué empieza a moverse y los tres tercios del periodo. Nada de áreas ni de fechas: eso se escribe aparte.',
+    areas:
+      'Escribe SOLO lo que toca cada área —abundancia, amor, trabajo y mundo emocional—, el patrón kármico del mes, la oportunidad y la advertencia principales, y las tres acciones concretas. Nada de fechas con día: eso se escribe aparte.',
+    fechas: `Escribe SOLO las fechas. En "diasImportantes", una entrada por cada ventana (${
       ventanas.map((v) => v.id).join(', ') || 'ninguna'
     }), en el mismo orden y con su identificador exacto. En "diasFavorables" y "diasCuidado", una entrada por cada día de esas listas (${
       [...entrada.dias.favorables, ...entrada.dias.cuidado].map((d) => d.id).join(', ') || 'ninguno'
     }). Si una lista está vacía, devuélvela vacía: no inventes fechas.`,
-  ].join('\n')
+  }
 
   try {
-    const { object, usage } = await generateObject({
-      model: modelo(MODELO_LECTURA),
-      schema: mesGeneradoSchema,
-      system: sistema(entrada.idioma, nombre),
-      prompt,
-      // Es el texto más largo y con más partes móviles del producto.
-      providerOptions: opcionesRazonamiento('medium'),
-      maxOutputTokens: 8000,
-    })
+    const t0 = Date.now()
+
+    const [historia, areas, fechas] = await Promise.all([
+      generateObject({
+        model: modelo(MODELO_LECTURA),
+        schema: mesHistoriaSchema,
+        system: sistema(entrada.idioma, nombre),
+        prompt: `${prompt}\n\n${encargos.historia}`,
+        providerOptions: opcionesRazonamiento('medium'),
+        /*
+         * Holgado a propósito. Los tokens de razonar cuentan contra este mismo
+         * tope, y con 4.000 el trozo de las áreas llegó cortado a mitad de una
+         * frase: el JSON no se podía ni leer. En llamadas separadas el margen
+         * no se comparte, y solo se paga lo que de verdad se escribe.
+         */
+        maxOutputTokens: 8000,
+      }),
+      generateObject({
+        model: modelo(MODELO_LECTURA),
+        schema: mesAreasSchema,
+        system: sistema(entrada.idioma, nombre),
+        prompt: `${prompt}\n\n${encargos.areas}`,
+        providerOptions: opcionesRazonamiento('medium'),
+        /*
+         * Holgado a propósito. Los tokens de razonar cuentan contra este mismo
+         * tope, y con 4.000 el trozo de las áreas llegó cortado a mitad de una
+         * frase: el JSON no se podía ni leer. En llamadas separadas el margen
+         * no se comparte, y solo se paga lo que de verdad se escribe.
+         */
+        maxOutputTokens: 8000,
+      }),
+      generateObject({
+        model: modelo(MODELO_LECTURA),
+        schema: mesFechasSchema,
+        system: sistema(entrada.idioma, nombre),
+        prompt: `${prompt}\n\n${encargos.fechas}`,
+        providerOptions: opcionesRazonamiento('medium'),
+        /*
+         * Holgado a propósito. Los tokens de razonar cuentan contra este mismo
+         * tope, y con 4.000 el trozo de las áreas llegó cortado a mitad de una
+         * frase: el JSON no se podía ni leer. En llamadas separadas el margen
+         * no se comparte, y solo se paga lo que de verdad se escribe.
+         */
+        maxOutputTokens: 8000,
+      }),
+    ])
+
+    const object = {
+      ...historia.object,
+      ...areas.object,
+      ...fechas.object,
+    } as MesEscrito
 
     console.info('[mes] generado', {
+      segundos: Math.round((Date.now() - t0) / 1000),
       ventanas: ventanas.length,
-      entrada: usage.inputTokens,
-      salida: usage.outputTokens,
-      razonamiento: usage.outputTokenDetails?.reasoningTokens,
+      entrada:
+        (historia.usage.inputTokens ?? 0) + (areas.usage.inputTokens ?? 0) + (fechas.usage.inputTokens ?? 0),
+      salida:
+        (historia.usage.outputTokens ?? 0) + (areas.usage.outputTokens ?? 0) + (fechas.usage.outputTokens ?? 0),
     })
 
     /* Ningún apartado se publica cortado. Las listas se revisan aparte. */

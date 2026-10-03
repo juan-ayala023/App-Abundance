@@ -324,7 +324,48 @@ const camposMes = {
   advertencia: parrafo,
 }
 
-/** Lo que se le pide al modelo para la lectura del mes. */
+/**
+ * La lectura del mes se pide en tres trozos, no en uno.
+ *
+ * De una sola vez son 1.450 palabras y tardaba 102 segundos medidos: casi dos
+ * minutos de pantalla de espera para alguien que acaba de pulsar un botón. El
+ * cálculo del cielo, para comparar, son 179 milisegundos; la espera entera era
+ * el modelo escribiendo.
+ *
+ * Los tres se piden a la vez y la espera pasa a ser la del más lento. El corte
+ * no es arbitrario: cada trozo es una pieza entera que se sostiene sola —la
+ * historia del mes, lo que toca cada área, y las fechas— y los tres reciben
+ * exactamente la misma carta y el mismo calendario, así que hablan del mismo
+ * mes aunque no se vean entre ellos.
+ */
+export const mesHistoriaSchema = z.object({
+  titular: camposMes.titular,
+  temaPrincipal: camposMes.temaPrincipal,
+  queEmpiezaAMoverse: camposMes.queEmpiezaAMoverse,
+  primeraParte: camposMes.primeraParte,
+  mitadDelMes: camposMes.mitadDelMes,
+  finalDelMes: camposMes.finalDelMes,
+})
+
+export const mesAreasSchema = z.object({
+  abundancia: camposMes.abundancia,
+  amor: camposMes.amor,
+  trabajo: camposMes.trabajo,
+  mundoEmocional: camposMes.mundoEmocional,
+  patronKarmico: camposMes.patronKarmico,
+  oportunidad: camposMes.oportunidad,
+  advertencia: camposMes.advertencia,
+  /** Tres, ni dos ni cuatro. */
+  tresAcciones: z.array(parrafo).min(3).max(3),
+})
+
+export const mesFechasSchema = z.object({
+  diasImportantes: z.array(diaImportanteEscritoSchema),
+  diasFavorables: z.array(diaSueltoEscritoSchema),
+  diasCuidado: z.array(diaSueltoEscritoSchema),
+})
+
+/** Los tres juntos: lo que se guarda, antes de pegarle las fechas. */
 export const mesGeneradoSchema = z.object({
   ...camposMes,
   diasImportantes: z.array(diaImportanteEscritoSchema),
