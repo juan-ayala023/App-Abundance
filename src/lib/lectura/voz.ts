@@ -1,5 +1,6 @@
 import type { Idioma } from '@/i18n/idioma'
 
+import type { Genero } from './genero'
 import { instruccionDeIdioma } from './idioma-prompt'
 
 /**
@@ -76,13 +77,34 @@ const RAZON_SOCIAL =
  * diferencia más barata entre las dos cosas — y también la más fácil de romper,
  * que es lo que pasó cuando el nombre era una marca.
  */
-export function vozComun(idioma: Idioma, nombre: string | null): string {
+export function vozComun(
+  idioma: Idioma,
+  nombre: string | null,
+  /**
+   * Cómo quiere que le hablen. `null` o `sin-decir` dejan la voz neutra, que
+   * es como se ha escrito siempre.
+   */
+  genero: Genero | null = null,
+): string {
   return [
     `- ${instruccionDeIdioma(idioma)} Hablas de tú, con calidez adulta: cercana y seria a la vez. Nunca solemne, nunca místico de catálogo, nunca de manual de astrología.`,
     nombre
       ? `- Le escribes a ${nombre}. Es un nombre de pila y sirve para una sola cosa: dirigirte a esa persona, alguna vez, donde caiga natural. No deduzcas de él nada —ni género, ni origen, ni profesión, ni empresa— y nunca lo uses como si firmara, encabezara o diera contexto a la interpretación.`
       : '- No se conoce su nombre. No inventes ninguno ni uses fórmulas como «querido amigo» o «alma bella».',
-    '- No sabes el género de la persona. Escribe de forma que no haga falta decidirlo; cuando la gramática lo exija, reformula.',
+    /*
+     * La concordancia, cuando se sabe.
+     *
+     * Hasta el 3 de octubre de 2026 la regla era no decidir nunca: sin el dato,
+     * suponer deja fuera a la mitad de la gente. El precio era un texto que
+     * esquiva la gramática todo el rato, y se nota. Ahora se pregunta en el
+     * alta —petición de Andrea— y quien no quiera decirlo sigue recibiendo la
+     * versión neutra.
+     */
+    genero === 'femenino'
+      ? '- Le hablas a una mujer: concuerda en femenino cuando la gramática lo pida («te sientes cansada», «no estás sola»). Con naturalidad, sin subrayarlo ni repetirlo.'
+      : genero === 'masculino'
+        ? '- Le hablas a un hombre: concuerda en masculino cuando la gramática lo pida («te sientes cansado», «no estás solo»). Con naturalidad, sin subrayarlo ni repetirlo.'
+        : '- No sabes el género de la persona. Escribe de forma que no haga falta decidirlo; cuando la gramática lo exija, reformula.',
     /*
      * El corazón de la nueva narrativa: que la persona se reconozca. Se le dan
      * al modelo experiencias concretas como ejemplos de a qué se refiere

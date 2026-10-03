@@ -3,10 +3,11 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-import type { EstadoNombre } from "./estado";
+import type { EstadoGenero, EstadoNombre } from "./estado";
 
 import { entitlementDe, resolveAccess } from "@/lib/access/entitlement";
 import { urlDelPortalDeFacturacion } from "@/lib/access/landing";
+import { generoParaLaVoz } from "@/lib/lectura/genero";
 import { createClient } from "@/lib/supabase/server";
 
 /**
@@ -112,6 +113,47 @@ export async function guardarNombre(
    * se ve aquí sale de lo que devuelve la base, que es la verdad.
    */
   return { nombre: guardado.full_name, error: null };
+}
+
+/**
+ * Cambia cómo le hablan las lecturas: en femenino, en masculino o sin marcar.
+ *
+ * Se cambia desde aquí por lo mismo que el nombre: no entra en ningún cálculo.
+ * La carta sale de la fecha, la hora y el lugar, y lo ya escrito se queda como
+ * se escribió —no se reescribe una lectura que la persona pudo leer ayer—. Lo
+ * que cambia es de aquí en adelante, y eso es lo que dice el aviso.
+ *
+ * Devuelve el valor guardado en vez de redirigir, por la misma razón que
+ * `guardarNombre()`: la caché de la ruta servía la pantalla anterior.
+ */
+export async function guardarGenero(
+  _previo: EstadoGenero,
+  formData: FormData,
+): Promise<EstadoGenero> {
+  const genero = generoParaLaVoz(formData.get("genero"));
+  if (!genero) return { genero: null, error: null };
+
+  const supabase = await createClient();
+  const { data: portal } = await supabase
+    .from("portals")
+    .select("id")
+    .maybeSingle();
+
+  if (!portal) return { genero: null, error: await textoDeCuenta("generoError") };
+
+  const { data: guardado, error } = await supabase
+    .from("portals")
+    .update({ genero })
+    .eq("id", portal.id)
+    .select("genero")
+    .maybeSingle();
+
+  if (error || !guardado) {
+    console.error("[cuenta] no se pudo guardar el género", error);
+    return { genero: null, error: await textoDeCuenta("generoError") };
+  }
+
+  return { genero: generoParaLaVoz(guardado.genero), error: null };
 }
 
 async function textoDeCuenta(clave: string): Promise<string> {

@@ -40,6 +40,24 @@ describe('vozComun', () => {
     expect(vozComun('es', null)).toMatch(/No inventes ninguno/)
   })
 
+  it('sin género, sigue sin decidirlo', () => {
+    // La regla de siempre: es la que reciben los portales anteriores a la
+    // pregunta y quien eligió no contestarla.
+    for (const genero of [null, 'sin-decir'] as const) {
+      expect(vozComun('es', 'Juan', genero)).toMatch(/No sabes el género/)
+    }
+  })
+
+  it('con género, concuerda en vez de esquivar', () => {
+    const ella = vozComun('es', 'Camila', 'femenino')
+    expect(ella).toMatch(/concuerda en femenino/)
+    expect(ella).not.toMatch(/No sabes el género/)
+
+    const el = vozComun('es', 'Juan', 'masculino')
+    expect(el).toMatch(/concuerda en masculino/)
+    expect(el).not.toMatch(/No sabes el género/)
+  })
+
   it('lleva las reglas de la narrativa de septiembre de 2026', () => {
     const voz = vozComun('es', null)
     // Hipótesis, no certezas; nada deducido que no esté en los datos.

@@ -9,6 +9,7 @@ import type { Database } from '@/lib/supabase/database.types'
 import { generarRetrato } from './generar-retrato'
 import { retratoSchema, retratoTextoSchema, type Retrato, type RetratoTexto } from './schemas'
 import type { Idioma } from '@/i18n/idioma'
+import { generoParaLaVoz } from './genero'
 import { nombreDePila } from './voz'
 
 /**
@@ -27,11 +28,13 @@ type Cliente = SupabaseClient<Database>
 export type PortalParaRetrato = {
   id: string
   full_name: string | null
+  /** `portals.genero`: cómo quiere que le hablen, si lo dijo. */
+  genero: string | null
   chart: unknown
   chart_reading: unknown
 }
 
-export const COLUMNAS_RETRATO = 'id, full_name, chart, chart_reading'
+export const COLUMNAS_RETRATO = 'id, full_name, genero, chart, chart_reading'
 
 /** El retrato en el idioma de la interfaz, si existe. Ver `lecturaEnIdioma`. */
 export function retratoEnIdioma(
@@ -60,6 +63,7 @@ export async function asegurarRetrato(
     retrato = await generarRetrato({
       idioma: await idiomaActual(),
       nombre: nombreDePila(portal.full_name),
+      genero: generoParaLaVoz(portal.genero),
       carta: carta.data,
     })
   } catch (error) {

@@ -18,6 +18,7 @@ import {
 } from '@/lib/lectura/schemas'
 import { generarRespuestaGuia, type MensajeDeHilo } from '@/lib/lectura/generar-guia'
 import { mesDeGuia } from '@/lib/lectura/guia'
+import { generoParaLaVoz } from '@/lib/lectura/genero'
 import { nombreDePila } from '@/lib/lectura/voz'
 import { createAdminClient, createClient } from '@/lib/supabase/server'
 
@@ -61,7 +62,7 @@ export async function consultarGuia(
 
   const { data: portal } = await supabase
     .from('portals')
-    .select('id, full_name, chart, base_reading, created_at, tz, display_tz')
+    .select('id, full_name, genero, chart, base_reading, created_at, tz, display_tz')
     .maybeSingle()
 
   if (!portal) {
@@ -120,6 +121,7 @@ export async function consultarGuia(
   try {
     resultado = await generarRespuestaGuia({
       nombre: nombreDePila(portal.full_name),
+      genero: generoParaLaVoz(portal.genero),
       idioma: await idiomaActual(),
       carta: carta.data,
       transitos,

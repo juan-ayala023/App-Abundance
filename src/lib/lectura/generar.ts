@@ -9,6 +9,7 @@ import { z } from 'zod'
 import type { Idioma } from '@/i18n/idioma'
 import { completarSecciones } from './completar'
 import { instruccionDeIdioma } from './idioma-prompt'
+import type { Genero } from '@/lib/lectura/genero'
 import { LIMITES, vozComun } from '@/lib/lectura/voz'
 import type { Carta } from '@/lib/astrology/types'
 
@@ -50,12 +51,12 @@ const ENCARGOS = [
   'recomendacionInicial: un solo paso pequeño para esta semana, que salga de todo lo anterior. Una acción, no un propósito de vida.',
 ]
 
-const sistema = (idioma: Idioma, nombre: string | null) => `Eres el intérprete de Abundance Code, un portal de astrología personalizada.
+const sistema = (idioma: Idioma, nombre: string | null, genero: Genero | null) => `Eres el intérprete de Abundance Code, un portal de astrología personalizada.
 
 Escribes la Lectura Base: la interpretación que la persona recibe al abrir su portal. Es el entregable del producto y la leerá una sola persona, sobre su propia carta.
 
 CÓMO ESCRIBES
-${vozComun(idioma, nombre)}
+${vozComun(idioma, nombre, genero)}
 - **Cada sección sigue este movimiento, con variaciones:** abre con una experiencia emocional o una pregunta concreta; introduce una referencia breve a su carta, en palabras llanas; explica el patrón posible sin convertirlo en certeza; y cierra con una reflexión o una acción pequeña. No repitas el mismo arranque en dos secciones.
 - Cada sección, entre 60 y 100 palabras. El resumen, entre 50 y 80.
 - **El detalle astrológico va en \`analisisCompleto\`, no en las secciones.** Ahí sí recorres las colocaciones, casas y aspectos que sostienen lo dicho arriba, explicando cada uno; la persona lo abre desde «Ver el contexto astrológico» cuando quiere saber de dónde sale todo. Las secciones se quedan con una referencia cada una.
@@ -68,6 +69,8 @@ ${LIMITES}`
 
 export async function generarLecturaBase(entrada: {
   nombre: string | null
+  /** Cómo quiere que le hablen, si lo dijo. `null` = voz neutra. */
+  genero: Genero | null
   carta: Carta
   idioma: Idioma
 }): Promise<LecturaBase> {
@@ -84,7 +87,7 @@ export async function generarLecturaBase(entrada: {
     const { object, usage } = await generateObject({
       model: modelo(MODELO_LECTURA),
       schema: lecturaGeneradaSchema,
-      system: sistema(entrada.idioma, nombre),
+      system: sistema(entrada.idioma, nombre, entrada.genero),
       prompt,
       // La lectura es el entregable y se genera una sola vez por usuario: es
       // donde tiene sentido gastar en razonamiento.
@@ -104,7 +107,7 @@ export async function generarLecturaBase(entrada: {
         const { object: rehechas } = await generateObject({
           model: modelo(MODELO_LECTURA),
           schema: z.object(Object.fromEntries(claves.map((c) => [c, z.string().min(1)]))),
-          system: sistema(entrada.idioma, nombre),
+          system: sistema(entrada.idioma, nombre, entrada.genero),
           prompt: `${prompt}\n\nVuelve a escribir SOLO estas secciones, completas y terminadas en punto: ${claves.join(', ')}. La anterior quedó cortada.`,
           providerOptions: opcionesRazonamiento('low'),
         })
@@ -160,6 +163,8 @@ export async function traducirLecturaBase(lectura: LecturaTexto, idioma: Idioma)
  */
 export async function escribirSeccionesNuevas(entrada: {
   nombre: string | null
+  /** Cómo quiere que le hablen, si lo dijo. `null` = voz neutra. */
+  genero: Genero | null
   carta: Carta
   idioma: Idioma
   /** La lectura tal como está guardada, para no repetirse. */
@@ -188,7 +193,7 @@ export async function escribirSeccionesNuevas(entrada: {
     const { object } = await generateObject({
       model: modelo(MODELO_LECTURA),
       schema: esquemaDeTexto(entrada.claves),
-      system: sistema(entrada.idioma, nombre),
+      system: sistema(entrada.idioma, nombre, entrada.genero),
       prompt,
       providerOptions: opcionesRazonamiento('medium'),
     })
@@ -200,7 +205,7 @@ export async function escribirSeccionesNuevas(entrada: {
         const { object: rehechas } = await generateObject({
           model: modelo(MODELO_LECTURA),
           schema: esquemaDeTexto(claves),
-          system: sistema(entrada.idioma, nombre),
+          system: sistema(entrada.idioma, nombre, entrada.genero),
           prompt: `${prompt}\n\nVuelve a escribir SOLO estas secciones, completas y terminadas en punto: ${claves.join(', ')}. La anterior quedó cortada.`,
           providerOptions: opcionesRazonamiento('low'),
         })

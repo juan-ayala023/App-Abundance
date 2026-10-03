@@ -1,4 +1,4 @@
-import { KeyRound, Mail, PencilLine, Sparkles, User } from "lucide-react";
+import { KeyRound, Mail, MessageCircle, PencilLine, Sparkles, User } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
@@ -7,6 +7,7 @@ import { idiomaActual } from "@/i18n/idioma";
 
 import { cerrarSesion } from "@/app/actions";
 import { abrirPortalDeFacturacion } from "./actions";
+import { GeneroEditable } from "@/components/cuenta/genero-editable";
 import { NombreEditable } from "@/components/cuenta/nombre-editable";
 import { Contenedor } from "@/components/layout/contenedor";
 import { EncabezadoPagina } from "@/components/layout/encabezado-pagina";
@@ -16,6 +17,7 @@ import { urlDeCompra } from "@/lib/access/enlaces";
 import { entitlementDe, resolveAccess } from "@/lib/access/entitlement";
 import { nivelDeAcceso } from "@/lib/access/nivel";
 import { diaDelCiclo } from "@/lib/lectura/ciclo";
+import { generoParaLaVoz } from "@/lib/lectura/genero";
 import { CONSULTAS_GUIA_POR_MES, DIAS_DE_PORTAL } from "@/lib/lectura/schemas";
 import { createClient } from "@/lib/supabase/server";
 import { zonaDelPortal } from "@/lib/time/dia";
@@ -61,7 +63,7 @@ export default async function CuentaPage({
     supabase
       .from("portals")
       .select(
-        "created_at, tz, full_name, birth_date, birth_time, time_unknown, birth_city, birth_country",
+        "created_at, tz, full_name, genero, birth_date, birth_time, time_unknown, birth_city, birth_country",
       )
       .maybeSingle(),
   ]);
@@ -148,6 +150,15 @@ export default async function CuentaPage({
         <Tarjeta className="flex min-w-0 items-start gap-4">
           <Insignia Icono={User} />
           <NombreEditable nombre={portal?.full_name ?? perfil?.full_name ?? "—"} />
+        </Tarjeta>
+        {/*
+          Cómo le hablan las lecturas. Está aquí, al lado del nombre, porque es
+          el otro dato que se cambia sin pasar por soporte: no entra en el
+          cálculo de la carta.
+        */}
+        <Tarjeta className="flex min-w-0 items-start gap-4">
+          <Insignia Icono={MessageCircle} />
+          <GeneroEditable genero={generoParaLaVoz(portal?.genero)} />
         </Tarjeta>
         <Dato Icono={Mail} etiqueta={t("email")} valor={perfil?.email ?? "—"} />
         <Dato Icono={Sparkles} etiqueta={t("plan")} valor={plan} />

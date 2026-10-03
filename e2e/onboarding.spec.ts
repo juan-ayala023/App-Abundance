@@ -56,6 +56,37 @@ test('«Continuar» no se enciende hasta que los datos valen', async ({ page }) 
   await expect(continuar).toBeDisabled()
 })
 
+test('sin decir cómo hablarle, no se puede continuar', async ({ page }) => {
+  /*
+   * Se pregunta en el alta porque la lectura concuerda en género en casi cada
+   * párrafo (Andrea, 3 oct 2026). Ninguna opción viene marcada: un valor por
+   * defecto acierta con la mayoría y se equivoca justo con quien más le
+   * importa. Quien no quiera decirlo tiene su opción, pero tiene que elegirla.
+   */
+  await page.goto('/onboarding')
+
+  await expect(page.getByText('¿Cómo prefieres que te hablemos?')).toBeVisible()
+  for (const opcion of ['En femenino', 'En masculino', 'Prefiero no decirlo']) {
+    await expect(page.getByRole('radio', { name: opcion })).not.toBeChecked()
+  }
+
+  const continuar = page.getByRole('button', { name: 'Continuar' })
+  await page.getByRole('textbox', { name: 'Nombre completo' }).fill('Persona de prueba')
+  await page.getByLabel('Día').fill('15')
+  await page.getByLabel('Mes').selectOption({ label: 'Junio' })
+  await page.getByLabel('Año').fill('1992')
+  await page.getByLabel('Hora de nacimiento', { exact: true }).fill('08:30')
+  await page.getByLabel('Ciudad de nacimiento').fill('Bogota')
+  const ciudad = page.getByRole('listbox').getByRole('option').first()
+  await expect(ciudad).toBeVisible({ timeout: 15_000 })
+  await ciudad.click()
+
+  // Todo lo demás está: lo único que falta es la pregunta.
+  await expect(continuar).toBeDisabled()
+  await page.getByRole('radio', { name: 'Prefiero no decirlo' }).check()
+  await expect(continuar).toBeEnabled()
+})
+
 test('confirmar antes de crear la carta, y poder volver a corregir', async ({ page }) => {
   /*
    * La generación de la lectura cuesta dinero de verdad. La prueba llega hasta
@@ -70,6 +101,7 @@ test('confirmar antes de crear la carta, y poder volver a corregir', async ({ pa
   await page.goto('/onboarding')
 
   await page.getByRole('textbox', { name: 'Nombre completo' }).fill('Persona de prueba')
+  await page.getByRole('radio', { name: 'En femenino' }).check()
   await page.getByLabel('Día').fill('15')
   await page.getByLabel('Mes').selectOption({ label: 'Junio' })
   await page.getByLabel('Año').fill('1992')
@@ -96,6 +128,7 @@ test('sin elegir ciudad de la lista no se puede continuar', async ({ page }) => 
   await page.goto('/onboarding')
 
   await page.getByRole('textbox', { name: 'Nombre completo' }).fill('Persona de prueba')
+  await page.getByRole('radio', { name: 'En femenino' }).check()
   await page.getByLabel('Día').fill('15')
   await page.getByLabel('Mes').selectOption({ label: 'Junio' })
   await page.getByLabel('Año').fill('1992')
@@ -150,6 +183,7 @@ test('la carta que se dibuja es la real, calculada desde los datos guardados', a
   // Sin datos de nacimiento no hay carta: primero se completa el onboarding.
   await page.goto('/onboarding')
   await page.getByRole('textbox', { name: 'Nombre completo' }).fill('Persona de prueba')
+  await page.getByRole('radio', { name: 'En femenino' }).check()
   await page.getByLabel('Día').fill('15')
   await page.getByLabel('Mes').selectOption({ label: 'Junio' })
   await page.getByLabel('Año').fill('1992')

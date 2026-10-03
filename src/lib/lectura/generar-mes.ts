@@ -21,6 +21,7 @@ import {
   mesHistoriaSchema,
   type MesTexto,
 } from './schemas'
+import type { Genero } from './genero'
 import { CONTROL_CALIDAD, LEXICO_MARCA, LIMITES_PRONOSTICO, nombreDePila, vozComun } from './voz'
 
 /**
@@ -51,10 +52,10 @@ export class MesError extends Error {}
 /** Lo que devuelve el modelo: todo el texto, sin una sola fecha. */
 type MesEscrito = z.infer<typeof mesGeneradoSchema>
 
-const sistema = (idioma: Idioma, nombre: string | null) => `Eres el intérprete de Abundance Code. Escribes la Lectura del Mes: qué se mueve en la vida de esta persona durante el periodo, cuándo y en qué área.
+const sistema = (idioma: Idioma, nombre: string | null, genero: Genero | null) => `Eres el intérprete de Abundance Code. Escribes la Lectura del Mes: qué se mueve en la vida de esta persona durante el periodo, cuándo y en qué área.
 
 CÓMO ESCRIBES
-${vozComun(idioma, nombre)}
+${vozComun(idioma, nombre, genero)}
 
 ${LEXICO_MARCA}
 
@@ -88,6 +89,8 @@ ${LIMITES_PRONOSTICO}`
 
 export async function generarMes(entrada: {
   nombre: string | null
+  /** Cómo quiere que le hablen, si lo dijo. `null` = voz neutra. */
+  genero: Genero | null
   carta: Carta
   pronostico: Pronostico
   dias: DiasSenalados
@@ -133,7 +136,7 @@ export async function generarMes(entrada: {
       generateObject({
         model: modelo(MODELO_LECTURA),
         schema: mesHistoriaSchema,
-        system: sistema(entrada.idioma, nombre),
+        system: sistema(entrada.idioma, nombre, entrada.genero),
         prompt: `${prompt}\n\n${encargos.historia}`,
         providerOptions: opcionesRazonamiento('medium'),
         /*
@@ -147,7 +150,7 @@ export async function generarMes(entrada: {
       generateObject({
         model: modelo(MODELO_LECTURA),
         schema: mesAreasSchema,
-        system: sistema(entrada.idioma, nombre),
+        system: sistema(entrada.idioma, nombre, entrada.genero),
         prompt: `${prompt}\n\n${encargos.areas}`,
         providerOptions: opcionesRazonamiento('medium'),
         /*
@@ -161,7 +164,7 @@ export async function generarMes(entrada: {
       generateObject({
         model: modelo(MODELO_LECTURA),
         schema: mesFechasSchema,
-        system: sistema(entrada.idioma, nombre),
+        system: sistema(entrada.idioma, nombre, entrada.genero),
         prompt: `${prompt}\n\n${encargos.fechas}`,
         providerOptions: opcionesRazonamiento('medium'),
         /*
@@ -197,7 +200,7 @@ export async function generarMes(entrada: {
           model: modelo(MODELO_LECTURA),
           // Solo apartados de texto: `completarSecciones` no mira las listas.
           schema: esquemaDeTexto(claves),
-          system: sistema(entrada.idioma, nombre),
+          system: sistema(entrada.idioma, nombre, entrada.genero),
           prompt: `${prompt}\n\nVuelve a escribir SOLO estos apartados, completos y terminados en punto: ${claves.join(
             ', ',
           )}. La versión anterior quedó cortada.`,

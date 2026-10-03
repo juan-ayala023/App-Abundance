@@ -8,6 +8,7 @@ import { createAdminClient } from '@/lib/supabase/server'
 import { generarActivacionDiaria } from './generar-activacion'
 import { contextoDelMes, mesGuardado } from './mes'
 import { activacionDiariaSchema, type ActivacionDiaria } from './schemas'
+import { generoParaLaVoz } from './genero'
 import { nombreDePila } from './voz'
 
 /**
@@ -73,6 +74,8 @@ export async function asegurarActivacion(
   fecha: string,
   /** `full_name` tal cual; aquí se reduce al nombre de pila antes de dárselo al modelo. */
   nombre: string | null,
+  /** `portals.genero` tal cual; la voz decide qué hacer con él. */
+  genero: string | null,
 ): Promise<ActivacionGuardada | null> {
   const admin = createAdminClient()
 
@@ -119,6 +122,7 @@ export async function asegurarActivacion(
   try {
     contenido = await generarActivacionDiaria({
       nombre: nombreDePila(nombre),
+      genero: generoParaLaVoz(genero),
       carta,
       transitos,
       dia,

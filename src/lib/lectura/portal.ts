@@ -9,6 +9,7 @@ import type { Database } from '@/lib/supabase/database.types'
 import { generarLecturaBase } from './generar'
 import { lecturaBaseSchema, lecturaTextoSchema, type LecturaBase, type LecturaTexto } from './schemas'
 import type { Idioma } from '@/i18n/idioma'
+import { generoParaLaVoz } from './genero'
 import { nombreDePila } from './voz'
 
 /**
@@ -28,11 +29,13 @@ type Cliente = SupabaseClient<Database>
 export type PortalParaLectura = {
   id: string
   full_name: string | null
+  /** `portals.genero`: cómo quiere que le hablen, si lo dijo. */
+  genero: string | null
   chart: unknown
   base_reading: unknown
 }
 
-export const COLUMNAS_LECTURA = 'id, full_name, chart, base_reading'
+export const COLUMNAS_LECTURA = 'id, full_name, genero, chart, base_reading'
 
 /**
  * La lectura en el idioma de la interfaz, si existe.
@@ -68,6 +71,7 @@ export async function asegurarLecturaBase(
     lectura = await generarLecturaBase({
       idioma: await idiomaActual(),
       nombre: nombreDePila(portal.full_name),
+      genero: generoParaLaVoz(portal.genero),
       carta: carta.data,
     })
   } catch (error) {

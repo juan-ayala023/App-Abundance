@@ -12,6 +12,7 @@ import type { Database } from '@/lib/supabase/database.types'
 
 import { generarMes } from './generar-mes'
 import { mesGuardadoSchema, mesTextoSchema, type MesGuardado, type MesTexto } from './schemas'
+import { generoParaLaVoz } from './genero'
 import { nombreDePila } from './voz'
 
 /**
@@ -32,11 +33,13 @@ type Cliente = SupabaseClient<Database>
 export type PortalParaMes = {
   id: string
   full_name: string | null
+  /** `portals.genero`: cómo quiere que le hablen, si lo dijo. */
+  genero: string | null
   chart: unknown
   tz: string | null
 }
 
-export const COLUMNAS_MES = 'id, full_name, chart, tz'
+export const COLUMNAS_MES = 'id, full_name, genero, chart, tz'
 
 export type MesVigente = {
   desde: string
@@ -88,6 +91,7 @@ export async function asegurarMes(supabase: Cliente, portal: PortalParaMes): Pro
   try {
     texto = await generarMes({
       nombre: nombreDePila(portal.full_name),
+      genero: generoParaLaVoz(portal.genero),
       carta: carta.data,
       pronostico: calculado,
       dias,

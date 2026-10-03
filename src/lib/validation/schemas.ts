@@ -1,5 +1,7 @@
 import { z } from 'zod'
 
+import { GENEROS } from '@/lib/lectura/genero'
+
 /**
  * Ruta interna de redirección tras el login.
  *
@@ -44,6 +46,13 @@ const FECHA_MINIMA = '1800-01-01'
 export const datosNacimientoSchema = z
   .object({
     fullName: z.string().trim().min(2, 'Escribe tu nombre').max(120),
+    /*
+     * Cómo quiere que le hablen. Se pregunta en el alta porque la lectura
+     * concuerda en género todo el rato y esquivarlo se nota; quien no quiera
+     * decirlo elige `sin-decir` y la recibe neutra, como antes. No entra en
+     * ningún cálculo: cambiarlo después no invalida ni la carta ni lo escrito.
+     */
+    genero: z.enum(GENEROS, { message: 'Elige una opción' }),
     birthDate: z
       .string()
       .regex(/^\d{4}-\d{2}-\d{2}$/, 'Fecha no válida')

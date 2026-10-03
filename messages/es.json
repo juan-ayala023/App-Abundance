@@ -129,7 +129,17 @@
     "nombreError": "No pudimos guardar tu nombre. Vuelve a intentarlo.",
     "solicitarCorreccion": "Solicitar una corrección",
     "volverAEntrar": "Cómo volver a entrar",
-    "volverAEntrarTexto": "No tienes contraseña que recordar. Tu sesión se queda abierta en este dispositivo, así que puedes cerrar la página y volver cuando quieras. Si cambias de teléfono o de ordenador, o si cierras sesión, escribe tu correo en la pantalla de entrada y te mandamos un enlace para entrar de nuevo. Mientras la sesión siga abierta no te enviamos ningún correo."
+    "volverAEntrarTexto": "No tienes contraseña que recordar. Tu sesión se queda abierta en este dispositivo, así que puedes cerrar la página y volver cuando quieras. Si cambias de teléfono o de ordenador, o si cierras sesión, escribe tu correo en la pantalla de entrada y te mandamos un enlace para entrar de nuevo. Mientras la sesión siga abierta no te enviamos ningún correo.",
+    "genero": "Cómo te hablamos",
+    "sinGenero": "Sin marcar",
+    "cambiarGenero": "Cambiar cómo te hablamos",
+    "generoGuardado": "Guardado. Se aplica a tus próximas lecturas; las que ya están escritas se quedan como están.",
+    "generoError": "No pudimos guardarlo. Inténtalo de nuevo.",
+    "generos": {
+      "femenino": "En femenino",
+      "masculino": "En masculino",
+      "sin-decir": "Sin marcar género"
+    }
   },
   "correccion": {
     "titulo": "Solicitar una corrección",
@@ -645,6 +655,13 @@
       "aviso": "Si cambias la <b>fecha, la hora o el lugar</b>, tu carta se recalcula y tu lectura base y tu retrato se vuelven a escribir sobre la carta nueva. <b>Las versiones anteriores no se pierden</b>: quedan guardadas y las puedes releer en tu lectura y en tu carta. Tus consultas de guía se conservan. Si solo cambias el nombre, nada se vuelve a escribir.",
       "guardar": "Guardar cambios",
       "cancelar": "Volver a Mi Cuenta sin cambiar nada"
+    },
+    "genero": "¿Cómo prefieres que te hablemos?",
+    "generoAyuda": "Tus lecturas te hablan de tú, y esto decide si lo hacen en femenino, en masculino o sin marcar género. Puedes cambiarlo cuando quieras.",
+    "generos": {
+      "femenino": "En femenino",
+      "masculino": "En masculino",
+      "sin-decir": "Prefiero no decirlo"
     }
   },
   "versiones": {

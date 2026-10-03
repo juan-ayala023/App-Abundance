@@ -18,6 +18,7 @@ import {
 async function completarOnboarding(page: import('@playwright/test').Page) {
   await page.goto('/onboarding')
   await page.getByRole('textbox', { name: 'Nombre completo' }).fill('Persona de prueba')
+  await page.getByRole('radio', { name: 'En femenino' }).check()
   await page.getByLabel('Día').fill('15')
   await page.getByLabel('Mes').selectOption({ label: 'Junio' })
   await page.getByLabel('Año').fill('1992')

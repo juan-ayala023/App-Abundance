@@ -229,6 +229,7 @@ export type Database = {
           created_at: string
           display_tz: string | null
           full_name: string | null
+          genero: string | null
           id: string
           lat: number | null
           lng: number | null
@@ -253,6 +254,7 @@ export type Database = {
           created_at?: string
           display_tz?: string | null
           full_name?: string | null
+          genero?: string | null
           id?: string
           lat?: number | null
           lng?: number | null
@@ -277,6 +279,7 @@ export type Database = {
           created_at?: string
           display_tz?: string | null
           full_name?: string | null
+          genero?: string | null
           id?: string
           lat?: number | null
           lng?: number | null

@@ -15,6 +15,7 @@ const lugar = {
 
 const valido = {
   fullName: 'Juan Ayala',
+  genero: 'masculino',
   birthDate: '1992-06-15',
   timeUnknown: false,
   birthTime: '08:30',
@@ -33,6 +34,18 @@ describe('datosNacimientoSchema', () => {
       birthTime: null,
     })
     expect(r.success).toBe(true)
+  })
+
+  it('rechaza que no se haya elegido cómo hablarle', () => {
+    // Se pregunta en el alta; un envío sin respuesta es un formulario
+    // manipulado o una versión vieja, y no se guarda a medias.
+    const sinGenero = { ...valido, genero: undefined }
+    expect(datosNacimientoSchema.safeParse(sinGenero).success).toBe(false)
+  })
+
+  it('rechaza un género que no existe', () => {
+    const r = datosNacimientoSchema.safeParse({ ...valido, genero: 'otro' })
+    expect(r.success).toBe(false)
   })
 
   it('rechaza hora desconocida CON hora', () => {

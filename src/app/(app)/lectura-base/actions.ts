@@ -9,6 +9,7 @@ import type { Carta } from '@/lib/astrology/types'
 import { escribirSeccionesNuevas, traducirLecturaBase } from '@/lib/lectura/generar'
 import { lecturaEnIdioma } from '@/lib/lectura/portal'
 import { clavesQueFaltan, lecturaBaseSchema } from '@/lib/lectura/schemas'
+import { generoParaLaVoz } from '@/lib/lectura/genero'
 import { createClient } from '@/lib/supabase/server'
 
 /**
@@ -63,7 +64,7 @@ export async function ampliarLecturaActual(): Promise<{ listo: boolean; motivo?:
   const supabase = await createClient()
   const { data: portal } = await supabase
     .from('portals')
-    .select('id, full_name, chart, base_reading')
+    .select('id, full_name, genero, chart, base_reading')
     .maybeSingle()
 
   const guardada = lecturaBaseSchema.safeParse(portal?.base_reading)
@@ -81,6 +82,7 @@ export async function ampliarLecturaActual(): Promise<{ listo: boolean; motivo?:
   try {
     const nuevas = await escribirSeccionesNuevas({
       nombre: portal.full_name,
+      genero: generoParaLaVoz(portal.genero),
       carta: portal.chart as Carta,
       idioma: guardada.data.idioma ?? 'es',
       lectura: guardada.data,

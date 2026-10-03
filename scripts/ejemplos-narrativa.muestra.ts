@@ -87,7 +87,7 @@ it('genera los ejemplos de la narrativa nueva', async () => {
 
   // 1. Lectura personal, con nombre de pila.
   const lectura =
-    guardado?.lectura ?? (await generarLecturaBase({ nombre: 'Laura', carta, idioma: 'es' }))
+    guardado?.lectura ?? (await generarLecturaBase({ nombre: 'Laura', genero: 'femenino', carta, idioma: 'es' }))
   partes.push('## 1 · Lectura personal (perfil «Laura Gómez»)', '')
   for (const [clave, texto] of Object.entries(lectura)) {
     if (typeof texto !== 'string') continue   // idioma / traducciones no son secciones
@@ -99,6 +99,7 @@ it('genera los ejemplos de la narrativa nueva', async () => {
     guardado?.activacion ??
     (await generarActivacionDiaria({
       nombre: 'Laura',
+      genero: 'femenino',
       carta,
       transitos,
       dia: 12,
@@ -117,6 +118,7 @@ it('genera los ejemplos de la narrativa nueva', async () => {
   // 3. Respuesta de guía con contexto normal.
   const guia = await generarRespuestaGuia({
     nombre: 'Laura',
+    genero: 'femenino',
     carta,
     transitos,
     resumen: lectura.resumen,
@@ -137,6 +139,8 @@ it('genera los ejemplos de la narrativa nueva', async () => {
   const nombreComercial = 'Inversiones AOA'
   const sinContexto = await generarRespuestaGuia({
     nombre: nombreDePila(nombreComercial),
+    // Sin género, como un portal que no lo preguntó: la voz tiene que apañarse.
+    genero: null,
     carta,
     transitos,
     resumen: null,

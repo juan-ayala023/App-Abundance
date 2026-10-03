@@ -129,7 +129,17 @@
     "nombreError": "We couldn't save your name. Please try again.",
     "solicitarCorreccion": "Request a correction",
     "volverAEntrar": "How to get back in",
-    "volverAEntrarTexto": "There's no password to remember. Your session stays open on this device, so you can close the page and come back whenever you like. If you switch phone or computer, or if you sign out, enter your email on the sign-in screen and we'll send you a link to get back in. While your session is open we don't send you any email."
+    "volverAEntrarTexto": "There's no password to remember. Your session stays open on this device, so you can close the page and come back whenever you like. If you switch phone or computer, or if you sign out, enter your email on the sign-in screen and we'll send you a link to get back in. While your session is open we don't send you any email.",
+    "genero": "How we address you",
+    "sinGenero": "Not set",
+    "cambiarGenero": "Change how we address you",
+    "generoGuardado": "Saved. It applies to your next readings; the ones already written stay as they are.",
+    "generoError": "We couldn't save it. Please try again.",
+    "generos": {
+      "femenino": "Feminine",
+      "masculino": "Masculine",
+      "sin-decir": "No gender marked"
+    }
   },
   "correccion": {
     "titulo": "Request a correction",
@@ -645,6 +655,13 @@
       "aviso": "If you change the <b>date, time or place</b>, your chart is recalculated and your base reading and portrait are written again over the new chart. <b>The previous versions are not lost</b>: they are kept and you can re-read them in your reading and your chart. Your guide questions are preserved. If you only change the name, nothing is rewritten.",
       "guardar": "Save changes",
       "cancelar": "Back to My Account without changing anything"
+    },
+    "genero": "How would you like us to address you?",
+    "generoAyuda": "Your readings speak to you directly, and this decides whether they do it in the feminine, the masculine or without marking gender. You can change it any time.",
+    "generos": {
+      "femenino": "Feminine",
+      "masculino": "Masculine",
+      "sin-decir": "I'd rather not say"
     }
   },
   "versiones": {

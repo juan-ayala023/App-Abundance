@@ -6,6 +6,7 @@ import { MODELO_RAPIDO, modelo, opcionesRazonamiento } from '@/lib/ai/modelo'
 import { describirCarta } from '@/lib/astrology/describir'
 import { describirTransitos, type AspectoTransito } from '@/lib/astrology/transitos'
 import type { Idioma } from '@/i18n/idioma'
+import type { Genero } from '@/lib/lectura/genero'
 import { CONTROL_CALIDAD, LEXICO_MARCA, LIMITES_PRONOSTICO, vozComun } from '@/lib/lectura/voz'
 import type { Carta } from '@/lib/astrology/types'
 
@@ -33,10 +34,10 @@ import { activacionGeneradaSchema, type ActivacionDiaria } from './schemas'
 
 export class ActivacionError extends Error {}
 
-const sistema = (idioma: Idioma, nombre: string | null) => `Eres el intérprete de Abundance Code. Escribes la Lectura de Hoy: qué podría moverse hoy en la vida de esta persona y qué señal conviene que mire.
+const sistema = (idioma: Idioma, nombre: string | null, genero: Genero | null) => `Eres el intérprete de Abundance Code. Escribes la Lectura de Hoy: qué podría moverse hoy en la vida de esta persona y qué señal conviene que mire.
 
 CÓMO ESCRIBES
-${vozComun(idioma, nombre)}
+${vozComun(idioma, nombre, genero)}
 
 ${LEXICO_MARCA}
 
@@ -64,6 +65,8 @@ ${LIMITES_PRONOSTICO}`
 export async function generarActivacionDiaria(entrada: {
   /** Nombre de pila, si se conoce. Lo usa `vozComun()`. */
   nombre: string | null
+  /** Cómo quiere que le hablen, si lo dijo. `null` = voz neutra. */
+  genero: Genero | null
   carta: Carta
   transitos: AspectoTransito[]
   /**
@@ -110,7 +113,7 @@ export async function generarActivacionDiaria(entrada: {
     const { object, usage } = await generateObject({
       model: modelo(MODELO_RAPIDO),
       schema: activacionGeneradaSchema,
-      system: sistema(entrada.idioma, entrada.nombre?.trim() || null),
+      system: sistema(entrada.idioma, entrada.nombre?.trim() || null, entrada.genero),
       prompt,
       // Texto corto y muy pautado: razonar mucho aquí no mejora el resultado y
       // sí multiplica el coste, que se paga treinta veces por usuario.

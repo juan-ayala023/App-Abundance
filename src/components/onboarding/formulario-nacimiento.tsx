@@ -7,6 +7,7 @@ import { useFormStatus } from 'react-dom'
 import { guardarDatosNacimiento } from '@/app/(app)/onboarding/actions'
 import { ESTADO_INICIAL } from '@/app/(app)/onboarding/estado'
 import type { Place } from '@/lib/geo/types'
+import { GENEROS, type Genero } from '@/lib/lectura/genero'
 
 import { BuscadorCiudades } from './buscador-ciudades'
 
@@ -16,6 +17,7 @@ export type ValoresIniciales = {
   birthTime: string
   timeUnknown: boolean
   lugar: Place | null
+  genero: Genero | null
 }
 
 /**
@@ -51,6 +53,14 @@ export function FormularioNacimiento({
   const [hora, setHora] = useState(valoresIniciales?.birthTime ?? '')
   const [horaDesconocida, setHoraDesconocida] = useState(valoresIniciales?.timeUnknown ?? false)
   const [lugar, setLugar] = useState<Place | null>(valoresIniciales?.lugar ?? null)
+  /*
+   * Sin opción marcada de salida, a propósito.
+   *
+   * Cualquier valor por defecto es una suposición: dejarlo en «femenino»
+   * porque la mayoría lo son acierta casi siempre y se equivoca justo con
+   * quien más le molesta. Vacío obliga a un toque y no decide por nadie.
+   */
+  const [genero, setGenero] = useState<Genero | ''>(valoresIniciales?.genero ?? '')
   const [confirmando, setConfirmando] = useState(false)
 
   const fecha = useMemo(() => componerFecha(dia, mes, anio), [dia, mes, anio])
@@ -59,6 +69,7 @@ export function FormularioNacimiento({
      que luego rechaza el formulario enseña el error después del esfuerzo. */
   const completo =
     nombre.trim().length > 1 &&
+    genero !== '' &&
     fecha !== null &&
     lugar !== null &&
     (horaDesconocida || /^\d{2}:\d{2}$/.test(hora))
@@ -80,6 +91,7 @@ export function FormularioNacimiento({
             la prueba e2e del alta completa.
           */}
           <input type="hidden" name="fullName" value={nombre} />
+          <input type="hidden" name="genero" value={genero} />
           <input type="hidden" name="birthTime" value={horaDesconocida ? '' : hora} />
           {horaDesconocida ? <input type="hidden" name="timeUnknown" value="on" /> : null}
           <input type="hidden" name="place" value={lugar ? JSON.stringify(lugar) : ''} />
@@ -109,6 +121,45 @@ export function FormularioNacimiento({
               className="rounded-xl border border-borde bg-superficie px-4 py-3"
             />
           </Campo>
+
+          {/*
+            Cómo quiere que le hablen.
+            Lo pidió Andrea el 3 de octubre de 2026: la lectura concuerda en
+            género en casi cada párrafo, y hasta ahora tenía prohibido
+            decidirlo —«escribe de forma que no haga falta elegirlo»—, lo que
+            la obligaba a dar rodeos que se notan al leer. Preguntado, el texto
+            concuerda de verdad; sin responder, seguiría igual que antes.
+          */}
+          <fieldset className="flex flex-col gap-2">
+            <legend className="text-sm font-medium">{t('genero')}</legend>
+            <p className="text-sm leading-relaxed opacity-75">{t('generoAyuda')}</p>
+            <div className="flex flex-col gap-2 sm:flex-row">
+              {GENEROS.map((opcion) => (
+                <label
+                  key={opcion}
+                  className={`flex flex-1 cursor-pointer items-center gap-2 rounded-xl border px-4 py-3 text-sm transition-colors ${
+                    genero === opcion
+                      ? 'border-oro bg-oro-palido/60'
+                      : 'border-borde bg-superficie hover:bg-oro-palido/30'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="genero"
+                    value={opcion}
+                    checked={genero === opcion}
+                    onChange={() => setGenero(opcion)}
+                  />
+                  {t(`generos.${opcion}` as never)}
+                </label>
+              ))}
+            </div>
+            {estado.campos.genero ? (
+              <p role="alert" className="text-sm text-[#a8503c]">
+                {estado.campos.genero}
+              </p>
+            ) : null}
+          </fieldset>
 
           <Campo id="birthDay" etiqueta={t('fecha')} error={estado.campos.birthDate}>
             <div className="grid grid-cols-[5rem_minmax(0,1fr)_6rem] gap-2">

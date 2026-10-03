@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation'
 
 import { FormularioNacimiento } from '@/components/onboarding/formulario-nacimiento'
 import type { Place } from '@/lib/geo/types'
+import { generoParaLaVoz } from '@/lib/lectura/genero'
 import { createClient } from '@/lib/supabase/server'
 
 export const metadata: Metadata = {
@@ -28,7 +29,7 @@ export default async function OnboardingPage({
   const { data: portal } = await supabase
     .from('portals')
     .select(
-      'full_name, birth_date, birth_time, time_unknown, birth_city, birth_country, lat, lng, tz, chart',
+      'full_name, genero, birth_date, birth_time, time_unknown, birth_city, birth_country, lat, lng, tz, chart',
     )
     .maybeSingle()
 
@@ -113,6 +114,7 @@ export default async function OnboardingPage({
                 birthTime: portal.birth_time ? String(portal.birth_time).slice(0, 5) : '',
                 timeUnknown: portal.time_unknown,
                 lugar: lugarInicial,
+                genero: generoParaLaVoz(portal.genero),
               }
             : undefined
         }

@@ -37,7 +37,7 @@ export async function escribirActivacion(): Promise<{
   const supabase = await createClient()
   const { data: portal } = await supabase
     .from('portals')
-    .select('id, full_name, chart, created_at, tz, display_tz')
+    .select('id, full_name, genero, chart, created_at, tz, display_tz')
     .maybeSingle()
 
   if (!portal) return { listo: false, motivo: 'error' }
@@ -55,6 +55,7 @@ export async function escribirActivacion(): Promise<{
     ciclo.total,
     ciclo.fecha,
     portal.full_name,
+    portal.genero,
   )
 
   if (!activacion) return { listo: false, motivo: 'error' }

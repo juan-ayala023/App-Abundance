@@ -9,6 +9,7 @@ import { z } from 'zod'
 import type { Idioma } from '@/i18n/idioma'
 import { completarSecciones } from './completar'
 import { instruccionDeIdioma } from './idioma-prompt'
+import type { Genero } from '@/lib/lectura/genero'
 import { LIMITES, vozComun } from '@/lib/lectura/voz'
 import type { Carta } from '@/lib/astrology/types'
 
@@ -64,12 +65,12 @@ const ENCARGOS = [
   'nudo: la tensión central de la carta, sacada de los aspectos más cerrados. Qué dos partes suyas tiran en direcciones distintas, y qué se gana cuando dejan de pelearse.',
 ]
 
-const sistema = (idioma: Idioma, nombre: string | null) => `Eres el intérprete de Abundance Code, un portal de astrología personalizada.
+const sistema = (idioma: Idioma, nombre: string | null, genero: Genero | null) => `Eres el intérprete de Abundance Code, un portal de astrología personalizada.
 
 Escribes el Retrato de la Carta: el recorrido por la carta natal de una persona, pieza a pieza. Lo lee una sola persona, sobre su propia carta, debajo de la rueda y de la tabla de posiciones.
 
 CÓMO ESCRIBES
-${vozComun(idioma, nombre)}
+${vozComun(idioma, nombre, genero)}
 - **Describes a la persona, no su carta.** Esta regla manda sobre cualquier otra, y aquí es distinta del resto del producto por una razón concreta: la posición ya está impresa junto al título de cada sección, y el usuario tiene además la tabla completa encima de tu texto. Así que NO escribas «tu Sol está en Cáncer» ni «con Mercurio en Leo tiendes a...». Escribe lo que esa posición SIGNIFICA en cómo esta persona es, piensa, quiere o reacciona.
 - Puedes nombrar un planeta cuando la frase lo necesite —«esa parte tuya que empuja», «lo que Saturno te ha ido enseñando»—, pero nunca para anunciar una posición.
 - Cada sección abre desde algo que la persona pueda reconocer en su día a día —una escena, una pregunta— y termina con una reflexión o un gesto pequeño. Varía el arranque: diez secciones que empiezan igual se leen como una plantilla.
@@ -81,6 +82,8 @@ ${LIMITES}`
 
 export async function generarRetrato(entrada: {
   nombre: string | null
+  /** Cómo quiere que le hablen, si lo dijo. `null` = voz neutra. */
+  genero: Genero | null
   carta: Carta
   idioma: Idioma
 }): Promise<Retrato> {
@@ -110,7 +113,7 @@ export async function generarRetrato(entrada: {
     const { object, usage } = await generateObject({
       model: modelo(MODELO_LECTURA),
       schema: exacta ? retratoExactoSchema : retratoParcialSchema,
-      system: sistema(entrada.idioma, nombre),
+      system: sistema(entrada.idioma, nombre, entrada.genero),
       prompt,
       /*
        * Mismo esfuerzo que la lectura base, y por la misma razón: se genera una
@@ -134,7 +137,7 @@ export async function generarRetrato(entrada: {
         const { object: rehechas } = await generateObject({
           model: modelo(MODELO_LECTURA),
           schema: z.object(Object.fromEntries(claves.map((c) => [c, z.string().min(1)]))),
-          system: sistema(entrada.idioma, nombre),
+          system: sistema(entrada.idioma, nombre, entrada.genero),
           prompt: `${prompt}\n\nVuelve a escribir SOLO estas secciones, completas y terminadas en punto: ${claves.join(', ')}. La anterior quedó cortada.`,
           providerOptions: opcionesRazonamiento('low'),
         })

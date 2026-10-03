@@ -34,6 +34,7 @@ export async function guardarDatosNacimiento(
 
   const parsed = datosNacimientoSchema.safeParse({
     fullName: formData.get('fullName'),
+    genero: formData.get('genero'),
     birthDate: formData.get('birthDate'),
     timeUnknown,
     birthTime: timeUnknown || horaBruta === '' ? null : horaBruta,
@@ -97,7 +98,7 @@ export async function guardarDatosNacimiento(
   if (editando && anterior && !nacimientoCambio) {
     const { error } = await supabase
       .from('portals')
-      .update({ full_name: datos.fullName })
+      .update({ full_name: datos.fullName, genero: datos.genero })
       .eq('id', anterior.id)
 
     if (error) {
@@ -117,6 +118,7 @@ export async function guardarDatosNacimiento(
       {
         user_id: user.id,
         full_name: datos.fullName,
+        genero: datos.genero,
         birth_date: datos.birthDate,
         birth_time: datos.timeUnknown ? null : datos.birthTime,
         time_unknown: datos.timeUnknown,

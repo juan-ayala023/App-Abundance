@@ -7,6 +7,7 @@ import { MODELO_RAPIDO, modelo, opcionesRazonamiento } from '@/lib/ai/modelo'
 import { describirCarta } from '@/lib/astrology/describir'
 import { describirTransitos, type AspectoTransito } from '@/lib/astrology/transitos'
 import type { Idioma } from '@/i18n/idioma'
+import type { Genero } from '@/lib/lectura/genero'
 import { LIMITES, vozComun } from '@/lib/lectura/voz'
 import type { Carta } from '@/lib/astrology/types'
 
@@ -52,10 +53,10 @@ const respuestaSchema = z.object({
  */
 const MAXIMO_TOKENS = 3000
 
-const sistema = (idioma: Idioma, nombre: string | null) => `Eres el intérprete de Abundance Code. Respondes consultas de la Guía Personalizada: alguien te trae una pregunta concreta y tú la miras desde su carta natal.
+const sistema = (idioma: Idioma, nombre: string | null, genero: Genero | null) => `Eres el intérprete de Abundance Code. Respondes consultas de la Guía Personalizada: alguien te trae una pregunta concreta y tú la miras desde su carta natal.
 
 CÓMO RESPONDES
-${vozComun(idioma, nombre)}
+${vozComun(idioma, nombre, genero)}
 - **Contesta desde SU carta, con una sola referencia.** Elige la colocación o el tránsito que más tenga que ver con la pregunta, nómbralo una vez en palabras corrientes —«esa parte tuya que necesita pertenecer», «el freno que pone tu Saturno»— y dedica el resto a su vida. Nada de casas, grados, «retrógrado» ni listas de aspectos: el detalle astrológico lo tiene en su carta. Sin esa referencia la respuesta valdría para cualquiera; con cinco, es un informe.
 - **Respondes a lo que preguntó, no a lo que imaginas que hay detrás.** Si la pregunta no dice de qué decisión, vínculo o situación se trata, no lo inventes: propón una hipótesis desde la carta («si lo que estás evitando tiene que ver con…») y pide el dato que falta para afinar. Una pregunta con poco contexto merece una respuesta honesta sobre ese poco contexto.
 - Entre 120 y 200 palabras, salvo que la persona pida más detalle. Una respuesta, no un ensayo.
@@ -77,6 +78,8 @@ ${LIMITES}
 export async function generarRespuestaGuia(entrada: {
   /** Nombre de pila, si se conoce. Lo usa `vozComun()`. */
   nombre: string | null
+  /** Cómo quiere que le hablen, si lo dijo. `null` = voz neutra. */
+  genero: Genero | null
   carta: Carta
   transitos: AspectoTransito[]
   /** Resumen de la lectura base, si existe: mantiene coherencia con lo ya leído. */
@@ -119,7 +122,7 @@ export async function generarRespuestaGuia(entrada: {
     const { object, usage } = await generateObject({
       model: modelo(MODELO_RAPIDO),
       schema: respuestaSchema,
-      system: sistema(entrada.idioma, entrada.nombre?.trim() || null),
+      system: sistema(entrada.idioma, entrada.nombre?.trim() || null, entrada.genero),
       prompt,
       maxOutputTokens: MAXIMO_TOKENS,
       providerOptions: opcionesRazonamiento('low'),
