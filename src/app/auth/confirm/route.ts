@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 import type { EmailOtpType } from '@supabase/supabase-js'
 
 import { destinoTrasEntrar } from '@/lib/access/destino'
+import { destinoInactivo, destinoSinCompra } from '@/lib/access/destino-login'
 import { resolveAccess } from '@/lib/access/entitlement'
 import { createClient } from '@/lib/supabase/server'
 import { safeNextPath } from '@/lib/validation/schemas'
@@ -52,9 +53,9 @@ export async function GET(request: NextRequest) {
     case 'concedido':
       return NextResponse.redirect(`${origin}${await destinoTrasEntrar(supabase, next)}`)
     case 'sin-compra':
-      return NextResponse.redirect(`${origin}/activar/vincular`)
+      return NextResponse.redirect(`${origin}${destinoSinCompra(next)}`)
     case 'inactivo':
-      return NextResponse.redirect(`${origin}/activar/vincular?estado=inactivo`)
+      return NextResponse.redirect(`${origin}${destinoInactivo(next)}`)
     default:
       console.error('[auth/confirm] sin sesión después de verificar el enlace')
       return NextResponse.redirect(`${origin}/activar?error=sesion`)

@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server'
 
 import { destinoTrasEntrar } from '@/lib/access/destino'
+import { destinoInactivo, destinoSinCompra } from '@/lib/access/destino-login'
 import { resolveAccess } from '@/lib/access/entitlement'
 import { createClient } from '@/lib/supabase/server'
 import { safeNextPath } from '@/lib/validation/schemas'
@@ -48,9 +49,9 @@ export async function GET(request: NextRequest) {
     case 'concedido':
       return NextResponse.redirect(`${origin}${await destinoTrasEntrar(supabase, next)}`)
     case 'sin-compra':
-      return NextResponse.redirect(`${origin}/activar/vincular`)
+      return NextResponse.redirect(`${origin}${destinoSinCompra(next)}`)
     case 'inactivo':
-      return NextResponse.redirect(`${origin}/activar/vincular?estado=inactivo`)
+      return NextResponse.redirect(`${origin}${destinoInactivo(next)}`)
     default:
       // La sesión se acaba de crear; llegar aquí significa que se perdió.
       console.error('[auth/callback] sin sesión después de canjear el código')
