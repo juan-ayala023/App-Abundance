@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server'
 
+import { COOKIE_IDIOMA, esIdioma } from '@/i18n/idioma'
 import { esRutaProtegida } from '@/lib/access/rutas'
 import { updateSession } from '@/lib/supabase/middleware'
 
@@ -15,6 +16,29 @@ export async function middleware(request: NextRequest) {
   const { response, user } = await updateSession(request)
 
   const { pathname, search } = request.nextUrl
+
+  /*
+   * El idioma puede venir en la URL: `?lang=en`.
+   *
+   * La app guarda el idioma en una cookie de SU dominio, y quien compra llega
+   * desde otro —la web, o un enlace del correo—, así que llega sin ninguna y
+   * veía el portal en español aunque hubiera comprado en inglés. Andrea lo
+   * probó el 3 de octubre de 2026: la web en inglés, el correo en inglés, y el
+   * portal en español.
+   *
+   * Se hace aquí y no en cada página porque las puertas de entrada son varias
+   * —`/activar`, `/auth/callback`, `/auth/confirm`— y todas pasan por aquí.
+   * Solo se escribe si el valor es uno de los idiomas: el nombre de la cookie
+   * decide qué archivo de mensajes se importa.
+   */
+  const pedido = request.nextUrl.searchParams.get('lang')
+  if (esIdioma(pedido) && request.cookies.get(COOKIE_IDIOMA)?.value !== pedido) {
+    response.cookies.set(COOKIE_IDIOMA, pedido, {
+      path: '/',
+      maxAge: 60 * 60 * 24 * 365,
+      sameSite: 'lax',
+    })
+  }
 
   if (!user && esRutaProtegida(pathname)) {
     const destino = request.nextUrl.clone()
