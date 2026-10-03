@@ -12,7 +12,7 @@ import type { Carta } from '@/lib/astrology/types'
 import type { Idioma } from '@/i18n/idioma'
 
 import { completarSecciones } from './completar'
-import { instruccionDeIdioma } from './idioma-prompt'
+import { conOrdenDeIdioma, instruccionDeIdioma } from './idioma-prompt'
 import {
   esquemaDeTexto,
   mesAreasSchema,
@@ -136,7 +136,7 @@ export async function generarMes(entrada: {
       generateObject({
         model: modelo(MODELO_LECTURA),
         schema: mesHistoriaSchema,
-        system: sistema(entrada.idioma, nombre, entrada.genero),
+        system: conOrdenDeIdioma(entrada.idioma, sistema(entrada.idioma, nombre, entrada.genero)),
         prompt: `${prompt}\n\n${encargos.historia}`,
         providerOptions: opcionesRazonamiento('medium'),
         /*
@@ -150,7 +150,7 @@ export async function generarMes(entrada: {
       generateObject({
         model: modelo(MODELO_LECTURA),
         schema: mesAreasSchema,
-        system: sistema(entrada.idioma, nombre, entrada.genero),
+        system: conOrdenDeIdioma(entrada.idioma, sistema(entrada.idioma, nombre, entrada.genero)),
         prompt: `${prompt}\n\n${encargos.areas}`,
         providerOptions: opcionesRazonamiento('medium'),
         /*
@@ -164,7 +164,7 @@ export async function generarMes(entrada: {
       generateObject({
         model: modelo(MODELO_LECTURA),
         schema: mesFechasSchema,
-        system: sistema(entrada.idioma, nombre, entrada.genero),
+        system: conOrdenDeIdioma(entrada.idioma, sistema(entrada.idioma, nombre, entrada.genero)),
         prompt: `${prompt}\n\n${encargos.fechas}`,
         providerOptions: opcionesRazonamiento('medium'),
         /*
@@ -200,7 +200,7 @@ export async function generarMes(entrada: {
           model: modelo(MODELO_LECTURA),
           // Solo apartados de texto: `completarSecciones` no mira las listas.
           schema: esquemaDeTexto(claves),
-          system: sistema(entrada.idioma, nombre, entrada.genero),
+          system: conOrdenDeIdioma(entrada.idioma, sistema(entrada.idioma, nombre, entrada.genero)),
           prompt: `${prompt}\n\nVuelve a escribir SOLO estos apartados, completos y terminados en punto: ${claves.join(
             ', ',
           )}. La versión anterior quedó cortada.`,

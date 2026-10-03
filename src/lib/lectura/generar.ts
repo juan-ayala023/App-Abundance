@@ -8,7 +8,7 @@ import { z } from 'zod'
 
 import type { Idioma } from '@/i18n/idioma'
 import { completarSecciones } from './completar'
-import { instruccionDeIdioma } from './idioma-prompt'
+import { conOrdenDeIdioma, instruccionDeIdioma } from './idioma-prompt'
 import { concordanciaAlTraducir, type Genero } from '@/lib/lectura/genero'
 import { LIMITES, vozComun } from '@/lib/lectura/voz'
 import type { Carta } from '@/lib/astrology/types'
@@ -87,7 +87,7 @@ export async function generarLecturaBase(entrada: {
     const { object, usage } = await generateObject({
       model: modelo(MODELO_LECTURA),
       schema: lecturaGeneradaSchema,
-      system: sistema(entrada.idioma, nombre, entrada.genero),
+      system: conOrdenDeIdioma(entrada.idioma, sistema(entrada.idioma, nombre, entrada.genero)),
       prompt,
       // La lectura es el entregable y se genera una sola vez por usuario: es
       // donde tiene sentido gastar en razonamiento.
@@ -107,7 +107,7 @@ export async function generarLecturaBase(entrada: {
         const { object: rehechas } = await generateObject({
           model: modelo(MODELO_LECTURA),
           schema: z.object(Object.fromEntries(claves.map((c) => [c, z.string().min(1)]))),
-          system: sistema(entrada.idioma, nombre, entrada.genero),
+          system: conOrdenDeIdioma(entrada.idioma, sistema(entrada.idioma, nombre, entrada.genero)),
           prompt: `${prompt}\n\nVuelve a escribir SOLO estas secciones, completas y terminadas en punto: ${claves.join(', ')}. La anterior quedó cortada.`,
           providerOptions: opcionesRazonamiento('low'),
         })
@@ -197,7 +197,7 @@ export async function escribirSeccionesNuevas(entrada: {
     const { object } = await generateObject({
       model: modelo(MODELO_LECTURA),
       schema: esquemaDeTexto(entrada.claves),
-      system: sistema(entrada.idioma, nombre, entrada.genero),
+      system: conOrdenDeIdioma(entrada.idioma, sistema(entrada.idioma, nombre, entrada.genero)),
       prompt,
       providerOptions: opcionesRazonamiento('medium'),
     })
@@ -209,7 +209,7 @@ export async function escribirSeccionesNuevas(entrada: {
         const { object: rehechas } = await generateObject({
           model: modelo(MODELO_LECTURA),
           schema: esquemaDeTexto(claves),
-          system: sistema(entrada.idioma, nombre, entrada.genero),
+          system: conOrdenDeIdioma(entrada.idioma, sistema(entrada.idioma, nombre, entrada.genero)),
           prompt: `${prompt}\n\nVuelve a escribir SOLO estas secciones, completas y terminadas en punto: ${claves.join(', ')}. La anterior quedó cortada.`,
           providerOptions: opcionesRazonamiento('low'),
         })

@@ -35,3 +35,29 @@ export const INSTRUCCION_IDIOMA: Record<Idioma, string> = {
 export function instruccionDeIdioma(idioma: Idioma): string {
   return INSTRUCCION_IDIOMA[idioma]
 }
+
+/**
+ * La orden del idioma, dicha donde no se puede pasar por alto.
+ *
+ * `INSTRUCCION_IDIOMA` es una línea entre otras quince, dentro de un prompt
+ * escrito entero en español. Para la lectura base bastaba; para la lectura de
+ * hoy no: un comprador inglés recibió su lectura del día en español, con la
+ * interfaz en inglés alrededor (3 oct 2026). El idioma guardado era `en` y la
+ * instrucción estaba puesta — el modelo simplemente se dejó llevar por el
+ * idioma en que está escrito todo lo demás.
+ *
+ * Así que se repite arriba y abajo, fuera de la lista. Lo primero y lo último
+ * que lee el modelo es en qué idioma tiene que escribir, y se le avisa de que
+ * las instrucciones van en otro para que no lo tome como ejemplo.
+ */
+export function ordenDeIdioma(idioma: Idioma): string {
+  return idioma === 'en'
+    ? 'IDIOMA DE SALIDA: INGLÉS. Estas instrucciones están en español, pero TODO lo que escribas va en inglés: titulares, párrafos y cada campo. Ni una sola frase en español.'
+    : 'IDIOMA DE SALIDA: ESPAÑOL. Todo lo que escribas va en español.'
+}
+
+/** Envuelve un prompt con la orden del idioma, al principio y al final. */
+export function conOrdenDeIdioma(idioma: Idioma, prompt: string): string {
+  const orden = ordenDeIdioma(idioma)
+  return `${orden}\n\n${prompt}\n\n${orden}`
+}

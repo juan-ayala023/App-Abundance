@@ -8,7 +8,7 @@ import { z } from 'zod'
 
 import type { Idioma } from '@/i18n/idioma'
 import { completarSecciones } from './completar'
-import { instruccionDeIdioma } from './idioma-prompt'
+import { conOrdenDeIdioma, instruccionDeIdioma } from './idioma-prompt'
 import { concordanciaAlTraducir, type Genero } from '@/lib/lectura/genero'
 import { LIMITES, vozComun } from '@/lib/lectura/voz'
 import type { Carta } from '@/lib/astrology/types'
@@ -113,7 +113,7 @@ export async function generarRetrato(entrada: {
     const { object, usage } = await generateObject({
       model: modelo(MODELO_LECTURA),
       schema: exacta ? retratoExactoSchema : retratoParcialSchema,
-      system: sistema(entrada.idioma, nombre, entrada.genero),
+      system: conOrdenDeIdioma(entrada.idioma, sistema(entrada.idioma, nombre, entrada.genero)),
       prompt,
       /*
        * Mismo esfuerzo que la lectura base, y por la misma razón: se genera una
@@ -137,7 +137,7 @@ export async function generarRetrato(entrada: {
         const { object: rehechas } = await generateObject({
           model: modelo(MODELO_LECTURA),
           schema: z.object(Object.fromEntries(claves.map((c) => [c, z.string().min(1)]))),
-          system: sistema(entrada.idioma, nombre, entrada.genero),
+          system: conOrdenDeIdioma(entrada.idioma, sistema(entrada.idioma, nombre, entrada.genero)),
           prompt: `${prompt}\n\nVuelve a escribir SOLO estas secciones, completas y terminadas en punto: ${claves.join(', ')}. La anterior quedó cortada.`,
           providerOptions: opcionesRazonamiento('low'),
         })

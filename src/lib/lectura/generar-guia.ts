@@ -8,6 +8,7 @@ import { describirCarta } from '@/lib/astrology/describir'
 import { describirTransitos, type AspectoTransito } from '@/lib/astrology/transitos'
 import type { Idioma } from '@/i18n/idioma'
 import type { Genero } from '@/lib/lectura/genero'
+import { conOrdenDeIdioma } from '@/lib/lectura/idioma-prompt'
 import { LIMITES, vozComun } from '@/lib/lectura/voz'
 import type { Carta } from '@/lib/astrology/types'
 
@@ -122,7 +123,10 @@ export async function generarRespuestaGuia(entrada: {
     const { object, usage } = await generateObject({
       model: modelo(MODELO_RAPIDO),
       schema: respuestaSchema,
-      system: sistema(entrada.idioma, entrada.nombre?.trim() || null, entrada.genero),
+      system: conOrdenDeIdioma(
+        entrada.idioma,
+        sistema(entrada.idioma, entrada.nombre?.trim() || null, entrada.genero),
+      ),
       prompt,
       maxOutputTokens: MAXIMO_TOKENS,
       providerOptions: opcionesRazonamiento('low'),
