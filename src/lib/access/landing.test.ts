@@ -267,6 +267,31 @@ describe("urlDelPortalDeFacturacion", () => {
     ).toBeUndefined();
   });
 
+  /**
+   * A dónde vuelve quien pulsa «Volver a Abundance Code» en el portal de
+   * Stripe. Sin decirlo, su backend devuelve a la portada de la web, y a ese
+   * portal se entra desde Mi Cuenta: Andrea acabó fuera de su portal sin forma
+   * de seguir (3 oct 2026).
+   */
+  it("pide volver a donde estaba la persona", async () => {
+    const fetchFalso = vi
+      .fn()
+      .mockResolvedValue(responder(200, { url: "https://billing.stripe.com/x" }));
+    vi.stubGlobal("fetch", fetchFalso);
+
+    const { urlDelPortalDeFacturacion } = await importarModulo();
+    await urlDelPortalDeFacturacion(
+      "maria@gmail.com",
+      "https://app.abundancecode.us/cuenta",
+    );
+
+    const [, init] = fetchFalso.mock.calls[0]!;
+    expect(JSON.parse(init.body as string)).toEqual({
+      email: "maria@gmail.com",
+      returnUrl: "https://app.abundancecode.us/cuenta",
+    });
+  });
+
   it("distingue «no hay suscripción de Stripe» (404) de un fallo", async () => {
     // Un acceso creado a mano en su base no tiene `stripe_customer_id`: el
     // portal responde 404. No es temporal; la app no debe decir «reintenta».

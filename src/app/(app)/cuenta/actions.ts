@@ -1,5 +1,6 @@
 "use server";
 
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import type { EstadoNombre } from "./estado";
@@ -26,7 +27,16 @@ export async function abrirPortalDeFacturacion() {
 
   if (!entitlement) redirect("/cuenta?portal=sin-compra");
 
-  const portal = await urlDelPortalDeFacturacion(entitlement.email);
+  /*
+   * Se le dice a dónde volver: a esta misma pantalla. El host público viaja en
+   * `x-forwarded-host` porque detrás del proxy la URL interna es otra.
+   */
+  const cabeceras = await headers();
+  const host = cabeceras.get("x-forwarded-host") ?? cabeceras.get("host");
+  const protocolo = cabeceras.get("x-forwarded-proto") ?? "https";
+  const vuelta = host ? `${protocolo}://${host}/cuenta` : undefined;
+
+  const portal = await urlDelPortalDeFacturacion(entitlement.email, vuelta);
 
   // Sin URL no se inventa nada: se vuelve diciendo qué pasó.
   if (!portal.ok) {

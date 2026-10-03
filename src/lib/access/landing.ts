@@ -273,12 +273,21 @@ export type ResultadoPortal =
 
 export async function urlDelPortalDeFacturacion(
   email: string,
+  /**
+   * A dónde vuelve quien pulsa «Volver a Abundance Code» allí dentro.
+   *
+   * Sin esto, su backend devuelve a la portada de la web, y a ese portal se
+   * entra desde Mi Cuenta: la persona acaba fuera de su portal sin forma de
+   * seguir. Su backend solo acepta direcciones propias, así que no es un
+   * redirector abierto.
+   */
+  returnUrl?: string,
 ): Promise<ResultadoPortal> {
   try {
     const respuesta = await fetch(`${baseUrl()}/api/stripe/portal`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email }),
+      body: JSON.stringify({ email, returnUrl }),
       signal: AbortSignal.timeout(TIEMPO_MAXIMO_MS),
       cache: "no-store",
     });
