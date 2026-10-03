@@ -22,9 +22,10 @@ import { BirthInstantError, resolveBirthInstant } from '@/lib/time/birth-instant
  * eso aquí se archiva todo —releíble en `reading_versions`, nunca se borra— y
  * se vacía la carta para que se recalcule sola en la siguiente visita.
  *
- * Lo que NO cubre: la ciudad. Cambiarla exige coordenadas y zona horaria, o
- * sea el buscador de ciudades, que vive dentro de la app y detrás de sesión.
- * Es el caso raro; la fecha y la hora son casi todas las correcciones.
+ * La ciudad es opcional: si no viene, se conserva la que había. La mayoría de
+ * las correcciones son de fecha o de hora, y obligar a reelegir la ciudad en
+ * cada una sería invitar a cambiarla sin querer. Cuando viene, trae también sus
+ * coordenadas y su zona horaria, que es lo que de verdad mueve el ascendente.
  *
  *   POST /api/admin/corregir-nacimiento
  *   { "email": "…", "birthDate": "1990-07-03", "birthTime": "00:30" | null,
@@ -43,6 +44,20 @@ const cuerpoSchema = z
       .regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'Hora no válida')
       .nullable(),
     timeUnknown: z.boolean(),
+    /*
+     * La ciudad, opcional. Si no viene, se conserva la que había: la mayoría
+     * de las correcciones son de fecha o de hora, y obligar a reelegir la
+     * ciudad en cada una sería invitar a cambiarla sin querer.
+     */
+    place: z
+      .object({
+        city: z.string().min(1),
+        country: z.string(),
+        lat: z.number().min(-90).max(90),
+        lng: z.number().min(-180).max(180),
+        tz: z.string().min(1),
+      })
+      .nullish(),
   })
   .refine((d) => !d.timeUnknown || d.birthTime === null, {
     message: 'No puede haber hora si se marcó como desconocida',
@@ -66,7 +81,7 @@ export async function POST(request: Request) {
     )
   }
 
-  const { email, birthDate, birthTime, timeUnknown } = cuerpo.data
+  const { email, birthDate, birthTime, timeUnknown, place } = cuerpo.data
   const db = createAdminClient()
 
   const { data: perfil } = await db
@@ -101,7 +116,8 @@ export async function POST(request: Request) {
   const mismoNacimiento =
     portal.birth_date === birthDate &&
     horaActual === birthTime &&
-    Boolean(portal.time_unknown) === timeUnknown
+    Boolean(portal.time_unknown) === timeUnknown &&
+    (!place || place.city === portal.birth_city)
 
   if (mismoNacimiento) {
     return NextResponse.json(
@@ -115,7 +131,9 @@ export async function POST(request: Request) {
    * comprobación que hace el alta, y vale aquí por lo mismo: más vale saber
    * que una combinación es imposible antes de archivar la lectura que después.
    */
-  if (!portal.tz) {
+  const zona = place?.tz ?? portal.tz
+
+  if (!zona) {
     return NextResponse.json(
       { message: 'Ese portal no tiene zona horaria guardada: hay que arreglarlo a mano' },
       { status: 409 },
@@ -123,7 +141,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    resolveBirthInstant({ birthDate, birthTime, timeUnknown, tz: portal.tz })
+    resolveBirthInstant({ birthDate, birthTime, timeUnknown, tz: zona })
   } catch (error) {
     if (error instanceof BirthInstantError) {
       return NextResponse.json(
@@ -138,6 +156,7 @@ export async function POST(request: Request) {
     birthDate: portal.birth_date,
     birthTime: horaActual,
     timeUnknown: Boolean(portal.time_unknown),
+    lugar: [portal.birth_city, portal.birth_country].filter(Boolean).join(', '),
   }
 
   /*
@@ -181,6 +200,15 @@ export async function POST(request: Request) {
       birth_date: birthDate,
       birth_time: timeUnknown ? null : birthTime,
       time_unknown: timeUnknown,
+      ...(place
+        ? {
+            birth_city: place.city,
+            birth_country: place.country,
+            lat: place.lat,
+            lng: place.lng,
+            tz: place.tz,
+          }
+        : {}),
       // La carta se vacía para que `asegurarCarta()` la recalcule con los datos
       // nuevos en la siguiente visita. No se calcula aquí: tardaría y esta
       // petición tiene que contestar al panel.
@@ -198,6 +226,13 @@ export async function POST(request: Request) {
   return NextResponse.json({
     archivadas: retiro.ok ? retiro.archivadas : [],
     antes,
-    ahora: { birthDate, birthTime: timeUnknown ? null : birthTime, timeUnknown },
+    ahora: {
+      birthDate,
+      birthTime: timeUnknown ? null : birthTime,
+      timeUnknown,
+      lugar: place
+        ? [place.city, place.country].filter(Boolean).join(', ')
+        : antes.lugar,
+    },
   })
 }
