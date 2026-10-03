@@ -1,4 +1,3 @@
-import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
 import { redirect } from 'next/navigation'
 
@@ -11,10 +10,9 @@ import { safeNextPath } from '@/lib/validation/schemas'
 
 import { canjearYVincular } from './actions'
 import { cambiarDeCuenta } from './vincular/actions'
+import { tituloDePagina } from '@/i18n/titulo'
 
-export const metadata: Metadata = {
-  title: 'Activar tu acceso · Abundance Code',
-}
+export const generateMetadata = tituloDePagina('activar')
 
 /** Códigos de error que traen las redirecciones. El texto está en `messages/`. */
 const ERRORES_CONOCIDOS = ['cancelado', 'sin_codigo', 'sesion'] as const

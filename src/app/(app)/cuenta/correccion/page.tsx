@@ -1,4 +1,3 @@
-import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
 import { redirect } from 'next/navigation'
 
@@ -9,10 +8,9 @@ import { Tarjeta } from '@/components/layout/tarjeta'
 import { idiomaActual } from '@/i18n/idioma'
 import { createClient } from '@/lib/supabase/server'
 import { fechaDeCalendario, horaDeReloj } from '@/lib/time/formato'
+import { tituloDePagina } from '@/i18n/titulo'
 
-export const metadata: Metadata = {
-  title: 'Solicitar una corrección · Abundance Code',
-}
+export const generateMetadata = tituloDePagina('correccion')
 
 /**
  * Pedir que se corrijan la fecha, la hora o el lugar de nacimiento.

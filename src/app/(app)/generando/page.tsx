@@ -1,5 +1,4 @@
 import { BookOpen, Check, DoorOpen, Route, Sun } from 'lucide-react'
-import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
 import { redirect } from 'next/navigation'
 
@@ -7,10 +6,9 @@ import { Insignia, Tarjeta } from '@/components/layout/tarjeta'
 import { Generacion } from '@/components/lectura/generacion'
 import { createClient } from '@/lib/supabase/server'
 import { nombreDePila } from '@/lib/lectura/voz'
+import { tituloDePagina } from '@/i18n/titulo'
 
-export const metadata: Metadata = {
-  title: 'Preparando tu lectura · Abundance Code',
-}
+export const generateMetadata = tituloDePagina('generando')
 
 /**
  * El límite de tiempo de la función, en segundos.

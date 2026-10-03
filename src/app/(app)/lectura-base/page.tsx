@@ -1,4 +1,3 @@
-import type { Metadata } from 'next'
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
 import { redirect } from 'next/navigation'
@@ -24,6 +23,7 @@ import { createClient } from '@/lib/supabase/server'
 import { fechaDeCalendario, horaDeReloj } from '@/lib/time/formato'
 
 import { ampliarLecturaActual, traducirLecturaActual } from './actions'
+import { tituloDePagina } from '@/i18n/titulo'
 
 /* Un párrafo largo del modelo se parte en dos o tres cortos para leer en
    pantalla: 85–90 palabras seguidas a 14 px era lo que Andrea vio. */
@@ -44,9 +44,7 @@ function parrafos(texto: string): string[] {
   return bloques
 }
 
-export const metadata: Metadata = {
-  title: 'Tu lectura base · Abundance Code',
-}
+export const generateMetadata = tituloDePagina('lecturaBase')
 
 /**
  * `ampliarLecturaActual()` se ejecuta dentro de esta ruta y llama al modelo.

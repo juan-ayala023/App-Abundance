@@ -1,4 +1,3 @@
-import type { Metadata } from 'next'
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
 import { redirect } from 'next/navigation'
@@ -7,10 +6,9 @@ import { FormularioNacimiento } from '@/components/onboarding/formulario-nacimie
 import type { Place } from '@/lib/geo/types'
 import { generoParaLaVoz } from '@/lib/lectura/genero'
 import { createClient } from '@/lib/supabase/server'
+import { tituloDePagina } from '@/i18n/titulo'
 
-export const metadata: Metadata = {
-  title: 'Tus datos de nacimiento · Abundance Code',
-}
+export const generateMetadata = tituloDePagina('onboarding')
 
 export default async function OnboardingPage({
   searchParams,

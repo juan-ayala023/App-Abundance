@@ -1,14 +1,12 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 
 import { Logo } from "@/components/layout/logo";
 import { PieLegal } from "@/components/layout/pie-legal";
 import { urlDeCompra } from "@/lib/access/enlaces";
+import { tituloDePagina } from '@/i18n/titulo'
 
-export const metadata: Metadata = {
-  title: "Planes · Abundance Code",
-};
+export const generateMetadata = tituloDePagina('planes')
 
 /**
  * Puente a la landing externa (CLAUDE.md §5).

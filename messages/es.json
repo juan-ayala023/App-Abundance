@@ -688,5 +688,19 @@
     "texto": "Puede ser un corte momentáneo de conexión. Lo que ya habías guardado —tu lectura, tus consultas— sigue ahí.",
     "reintentar": "Volver a cargar",
     "portal": "Ir a mi portal"
+  },
+  "titulos": {
+    "activacion": "Activación de hoy",
+    "carta": "Tu carta natal",
+    "correccion": "Solicitar una corrección",
+    "cuenta": "Mi cuenta",
+    "generando": "Preparando tu lectura",
+    "guia": "Guía personalizada",
+    "lecturaBase": "Tu lectura base",
+    "onboarding": "Tus datos de nacimiento",
+    "portal": "Tu portal",
+    "planes": "Planes",
+    "activar": "Activar tu acceso",
+    "vincular": "Vincula tu compra"
   }
 }

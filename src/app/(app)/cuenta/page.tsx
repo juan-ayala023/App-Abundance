@@ -1,5 +1,4 @@
 import { KeyRound, Mail, MessageCircle, PencilLine, Sparkles, User } from "lucide-react";
-import type { Metadata } from "next";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 
@@ -16,6 +15,7 @@ import { ESTADO_CORTESIA } from "@/lib/access/cortesia";
 import { urlDeCompra } from "@/lib/access/enlaces";
 import { entitlementDe, resolveAccess } from "@/lib/access/entitlement";
 import { nivelDeAcceso } from "@/lib/access/nivel";
+import { tituloDePagina } from "@/i18n/titulo";
 import { diaDelCiclo } from "@/lib/lectura/ciclo";
 import { generoParaLaVoz } from "@/lib/lectura/genero";
 import { CONSULTAS_GUIA_POR_MES, DIAS_DE_PORTAL } from "@/lib/lectura/schemas";
@@ -27,9 +27,7 @@ import {
   horaDeReloj,
 } from "@/lib/time/formato";
 
-export const metadata: Metadata = {
-  title: "Mi cuenta · Abundance Code",
-};
+export const generateMetadata = tituloDePagina('cuenta')
 
 export default async function CuentaPage({
   searchParams,

@@ -688,5 +688,19 @@
     "texto": "It may be a momentary connection issue. Whatever you had already saved — your reading, your questions — is still there.",
     "reintentar": "Reload",
     "portal": "Go to my portal"
+  },
+  "titulos": {
+    "activacion": "Today's activation",
+    "carta": "Your natal chart",
+    "correccion": "Request a correction",
+    "cuenta": "My account",
+    "generando": "Preparing your reading",
+    "guia": "Personal guidance",
+    "lecturaBase": "Your base reading",
+    "onboarding": "Your birth details",
+    "portal": "Your portal",
+    "planes": "Plans",
+    "activar": "Activate your access",
+    "vincular": "Link your purchase"
   }
 }

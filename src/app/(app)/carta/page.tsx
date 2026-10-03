@@ -1,4 +1,3 @@
-import type { Metadata } from 'next'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
@@ -21,6 +20,7 @@ import {
 import { retratoSchema } from '@/lib/lectura/schemas'
 import { createClient } from '@/lib/supabase/server'
 import { fechaDeCalendario } from '@/lib/time/formato'
+import { tituloDePagina } from '@/i18n/titulo'
 
 /**
  * El retrato se escribe durante el render la primera vez que alguien abre su
@@ -34,9 +34,7 @@ import { fechaDeCalendario } from '@/lib/time/formato'
  */
 export const maxDuration = 300
 
-export const metadata: Metadata = {
-  title: 'Tu carta natal · Abundance Code',
-}
+export const generateMetadata = tituloDePagina('carta')
 
 export default async function CartaPage() {
   const t = await getTranslations('carta')

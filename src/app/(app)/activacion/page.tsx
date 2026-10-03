@@ -1,5 +1,4 @@
 import { Clock, Eye, MinusCircle, Sun } from 'lucide-react'
-import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
@@ -23,10 +22,9 @@ import { createClient } from '@/lib/supabase/server'
 import { zonaDelPortal } from '@/lib/time/dia'
 
 import { traducirMesActual } from './actions'
+import { tituloDePagina } from '@/i18n/titulo'
 
-export const metadata: Metadata = {
-  title: 'Activación de hoy · Abundance Code',
-}
+export const generateMetadata = tituloDePagina('activacion')
 
 /**
  * Las dos acciones que se ejecutan en esta ruta llaman al modelo: la lectura

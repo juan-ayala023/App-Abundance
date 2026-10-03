@@ -1,5 +1,4 @@
 import { CalendarDays, Compass, MessageCircle, Sparkles, Sun } from 'lucide-react'
-import type { Metadata } from 'next'
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
 
@@ -19,10 +18,9 @@ import { nombreDePila } from '@/lib/lectura/voz'
 import { createClient } from '@/lib/supabase/server'
 import { cn } from '@/lib/utils'
 import { zonaDelPortal } from '@/lib/time/dia'
+import { tituloDePagina } from '@/i18n/titulo'
 
-export const metadata: Metadata = {
-  title: 'Tu portal · Abundance Code',
-}
+export const generateMetadata = tituloDePagina('portal')
 
 export default async function PortalPage() {
   const supabase = await createClient()

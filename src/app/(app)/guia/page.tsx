@@ -1,4 +1,3 @@
-import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
 import { redirect } from 'next/navigation'
 
@@ -15,6 +14,7 @@ import { mesDeGuia } from '@/lib/lectura/guia'
 import { AREAS } from '@/lib/astrology/areas'
 import { createClient } from '@/lib/supabase/server'
 import { zonaDelPortal } from '@/lib/time/dia'
+import { tituloDePagina } from '@/i18n/titulo'
 
 /**
  * La acción `consultarGuia()` corre dentro de esta ruta: unos 6 s medidos, que
@@ -24,9 +24,7 @@ import { zonaDelPortal } from '@/lib/time/dia'
  */
 export const maxDuration = 60
 
-export const metadata: Metadata = {
-  title: 'Guía personalizada · Abundance Code',
-}
+export const generateMetadata = tituloDePagina('guia')
 
 export default async function GuiaPage({
   searchParams,

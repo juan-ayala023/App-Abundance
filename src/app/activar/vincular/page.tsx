@@ -1,4 +1,3 @@
-import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 
 import { resolveAccess } from '@/lib/access/entitlement'
@@ -9,10 +8,9 @@ import { urlDeReenvio } from '@/lib/access/landing'
 import { CORREO_SOPORTE } from '@/lib/soporte'
 
 import { cerrarSesion } from './actions'
+import { tituloDePagina } from '@/i18n/titulo'
 
-export const metadata: Metadata = {
-  title: 'Vincula tu compra · Abundance Code',
-}
+export const generateMetadata = tituloDePagina('vincular')
 
 /**
  * Pantalla para quien entró con Google pero no tiene acceso.
