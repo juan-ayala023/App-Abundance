@@ -326,6 +326,26 @@ test('mi cuenta reúne estado, día y activación en una tarjeta', async ({ page
  * la carta y archivaría la lectura base y el retrato. Por eso una es un lápiz
  * y la otra es una solicitud que alguien mira.
  */
+test('cómo le hablan las lecturas se cambia desde Mi Cuenta', async ({ page }) => {
+  /*
+   * El otro dato que no toca la carta. El alta lo preguntó —el ayudante elige
+   * «En femenino»— y aquí se cambia de un toque, sin pasar por soporte. Lo
+   * que se enseña después del cambio es lo que devolvió el servidor, no lo
+   * que se pulsó: la acción confirma que la fila se escribió.
+   */
+  await completarOnboarding(page)
+  await page.goto('/cuenta')
+
+  await expect(page.getByText('En femenino')).toBeVisible()
+
+  await page.getByRole('button', { name: 'Cambiar cómo te hablamos' }).click()
+  await page.getByRole('button', { name: 'Sin marcar género' }).click()
+
+  // Con margen: detrás del botón hay una escritura en la base y su vuelta.
+  await expect(page.getByText('Sin marcar género')).toBeVisible({ timeout: 15_000 })
+  await expect(page.getByText(/se aplica a tus próximas lecturas/i)).toBeVisible()
+})
+
 test('el nombre se cambia solo; la fecha de nacimiento pasa por soporte', async ({ page }) => {
   await completarOnboarding(page)
   await page.goto('/cuenta')
