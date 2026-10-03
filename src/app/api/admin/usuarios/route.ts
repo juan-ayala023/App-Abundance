@@ -39,6 +39,15 @@ export type UsuarioPortal = {
   registradoEn: string | null
   /** Completó el onboarding: tiene carta natal generada. */
   tienePortal: boolean
+  /**
+   * Su nacimiento, para poder corregirlo desde el panel.
+   *
+   * Va aquí y no en una llamada aparte porque el panel lo necesita para
+   * **rellenar** el formulario: una corrección cambia un dígito de un año o
+   * media hora, y escribir la fecha entera de memoria es la forma más fácil de
+   * convertir una corrección en un error nuevo.
+   */
+  nacimiento: { fecha: string; hora: string | null; horaDesconocida: boolean; lugar: string } | null
   /** Última vez que inició sesión. `null` si nunca (cortesía sin entrar). */
   ultimoAccesoEn: string | null
   acceso: AccesoDeUsuario
@@ -71,7 +80,9 @@ export async function GET(request: Request) {
       .order('created_at', { ascending: false })
       .limit(MAXIMO),
     db.from('entitlements').select('email, status, plan, source, has_access').limit(MAXIMO),
-    db.from('portals').select('user_id').limit(MAXIMO),
+    db.from('portals')
+      .select('user_id, birth_date, birth_time, time_unknown, birth_city, birth_country')
+      .limit(MAXIMO),
     /* La última entrada vive en auth, no en profiles. Es el dato que permite
        ver quién lleva semanas sin volver, que es lo que decide una baja. */
     db.auth.admin.listUsers({ perPage: MAXIMO }),
@@ -86,6 +97,7 @@ export async function GET(request: Request) {
 
   const cortesias = new Set(correosDeCortesia())
   const conPortal = new Set((portales.data ?? []).map((fila) => fila.user_id))
+  const portalesPorUsuario = new Map((portales.data ?? []).map((fila) => [fila.user_id, fila]))
   const ultimoAcceso = new Map(
     (cuentas.data?.users ?? []).map((u) => [u.id, u.last_sign_in_at ?? null]),
   )
@@ -114,6 +126,7 @@ export async function GET(request: Request) {
       nombre: perfil.full_name,
       registradoEn: perfil.created_at,
       tienePortal: conPortal.has(perfil.id),
+      nacimiento: nacimientoDe(portalesPorUsuario.get(perfil.id)),
       ultimoAccesoEn: ultimoAcceso.get(perfil.id) ?? null,
       acceso,
       plan: compra?.plan ?? null,
@@ -135,6 +148,7 @@ export async function GET(request: Request) {
       email,
       nombre: null,
       registradoEn: null,
+      nacimiento: null,
       tienePortal: false,
       ultimoAccesoEn: null,
       acceso: 'cortesia',
@@ -212,4 +226,26 @@ export async function DELETE(request: Request) {
     /* Para que el panel avise: seguirá entrando mientras esté en la lista. */
     cortesia: esCortesia(perfil.email),
   })
+}
+
+/** El nacimiento tal y como lo necesita el formulario de corrección del panel. */
+function nacimientoDe(
+  portal:
+    | {
+        birth_date: string | null
+        birth_time: string | null
+        time_unknown: boolean | null
+        birth_city: string | null
+        birth_country: string | null
+      }
+    | undefined,
+): UsuarioPortal['nacimiento'] {
+  if (!portal?.birth_date) return null
+  return {
+    fecha: portal.birth_date,
+    // Postgres devuelve `HH:MM:SS`; el formulario trabaja con `HH:MM`.
+    hora: portal.birth_time ? String(portal.birth_time).slice(0, 5) : null,
+    horaDesconocida: Boolean(portal.time_unknown),
+    lugar: [portal.birth_city, portal.birth_country].filter(Boolean).join(', '),
+  }
 }
