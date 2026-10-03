@@ -9,7 +9,7 @@ import { z } from 'zod'
 import type { Idioma } from '@/i18n/idioma'
 import { completarSecciones } from './completar'
 import { instruccionDeIdioma } from './idioma-prompt'
-import type { Genero } from '@/lib/lectura/genero'
+import { concordanciaAlTraducir, type Genero } from '@/lib/lectura/genero'
 import { LIMITES, vozComun } from '@/lib/lectura/voz'
 import type { Carta } from '@/lib/astrology/types'
 
@@ -154,14 +154,18 @@ export async function generarRetrato(entrada: {
 }
 
 /** Traduce un retrato ya escrito, sección por sección. Ver `traducirLecturaBase`. */
-export async function traducirRetrato(retrato: RetratoTexto, idioma: Idioma): Promise<RetratoTexto> {
+export async function traducirRetrato(
+  retrato: RetratoTexto,
+  idioma: Idioma,
+  genero: Genero | null,
+): Promise<RetratoTexto> {
   const { idioma: _i, traducciones: _t, ...texto } = retrato as RetratoTexto & { idioma?: unknown; traducciones?: unknown }
   void _i; void _t
   try {
     const { object } = await generateObject({
       model: modelo(MODELO_LECTURA),
       schema: texto.ascendente ? retratoExactoSchema : retratoParcialSchema,
-      system: `Traduces al ${idioma === 'en' ? 'inglés' : 'español'} el retrato astrológico de una persona, sección por sección, sin resumir ni añadir nada. Mantienes el tono cercano y directo, la segunda persona y la misma longitud. ${instruccionDeIdioma(idioma)}`,
+      system: `Traduces al ${idioma === 'en' ? 'inglés' : 'español'} el retrato astrológico de una persona, sección por sección, sin resumir ni añadir nada. Mantienes el tono cercano y directo, la segunda persona y la misma longitud.${concordanciaAlTraducir(genero)} ${instruccionDeIdioma(idioma)}`,
       prompt: JSON.stringify(texto),
     })
     return object

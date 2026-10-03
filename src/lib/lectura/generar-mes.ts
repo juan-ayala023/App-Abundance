@@ -21,7 +21,7 @@ import {
   mesHistoriaSchema,
   type MesTexto,
 } from './schemas'
-import type { Genero } from './genero'
+import { concordanciaAlTraducir, type Genero } from './genero'
 import { CONTROL_CALIDAD, LEXICO_MARCA, LIMITES_PRONOSTICO, nombreDePila, vozComun } from './voz'
 
 /**
@@ -219,14 +219,18 @@ export async function generarMes(entrada: {
 }
 
 /** Traduce una lectura del mes ya escrita, conservando todas las fechas. */
-export async function traducirMes(texto: MesTexto, idioma: Idioma): Promise<MesTexto> {
+export async function traducirMes(
+  texto: MesTexto,
+  idioma: Idioma,
+  genero: Genero | null,
+): Promise<MesTexto> {
   try {
     const { object } = await generateObject({
       model: modelo(MODELO_LECTURA),
       schema: mesGeneradoSchema,
       system: `Traduces al ${
         idioma === 'en' ? 'inglés' : 'español'
-      } una lectura astrológica mensual, campo por campo, sin resumir ni añadir nada. Mantienes el tono, la intensidad y la longitud. No traduzcas los identificadores ni cambies ninguna fecha. ${instruccionDeIdioma(idioma)}`,
+      } una lectura astrológica mensual, campo por campo, sin resumir ni añadir nada. Mantienes el tono, la intensidad y la longitud. No traduzcas los identificadores ni cambies ninguna fecha.${concordanciaAlTraducir(genero)} ${instruccionDeIdioma(idioma)}`,
       prompt: JSON.stringify(texto),
       maxOutputTokens: 8000,
     })

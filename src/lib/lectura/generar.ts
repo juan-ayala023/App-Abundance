@@ -9,7 +9,7 @@ import { z } from 'zod'
 import type { Idioma } from '@/i18n/idioma'
 import { completarSecciones } from './completar'
 import { instruccionDeIdioma } from './idioma-prompt'
-import type { Genero } from '@/lib/lectura/genero'
+import { concordanciaAlTraducir, type Genero } from '@/lib/lectura/genero'
 import { LIMITES, vozComun } from '@/lib/lectura/voz'
 import type { Carta } from '@/lib/astrology/types'
 
@@ -129,7 +129,11 @@ export async function generarLecturaBase(entrada: {
  * No la reescribe: traducir es más barato y, sobre todo, no le cambia la
  * lectura a la persona. El resultado se guarda en `traducciones[idioma]`.
  */
-export async function traducirLecturaBase(lectura: LecturaTexto, idioma: Idioma): Promise<LecturaTexto> {
+export async function traducirLecturaBase(
+  lectura: LecturaTexto,
+  idioma: Idioma,
+  genero: Genero | null,
+): Promise<LecturaTexto> {
   const { idioma: _i, traducciones: _t, ...texto } = lectura as LecturaTexto & { idioma?: unknown; traducciones?: unknown }
   void _i; void _t
 
@@ -142,7 +146,7 @@ export async function traducirLecturaBase(lectura: LecturaTexto, idioma: Idioma)
     const { object } = await generateObject({
       model: modelo(MODELO_LECTURA),
       schema: esquemaDeTexto(claves),
-      system: `Traduces al ${idioma === 'en' ? 'inglés' : 'español'} una lectura astrológica personal, sección por sección, sin resumir ni añadir nada. Mantienes el tono cercano y directo, la segunda persona y la misma longitud. ${instruccionDeIdioma(idioma)}`,
+      system: `Traduces al ${idioma === 'en' ? 'inglés' : 'español'} una lectura astrológica personal, sección por sección, sin resumir ni añadir nada. Mantienes el tono cercano y directo, la segunda persona y la misma longitud.${concordanciaAlTraducir(genero)} ${instruccionDeIdioma(idioma)}`,
       prompt: JSON.stringify(texto),
     })
     return object as LecturaTexto

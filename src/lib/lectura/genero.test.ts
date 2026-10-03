@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { esGenero, GENEROS, generoParaLaVoz } from './genero'
+import { concordanciaAlTraducir, esGenero, GENEROS, generoParaLaVoz } from './genero'
 
 describe('generoParaLaVoz', () => {
   it('deja pasar los tres valores que acepta la base', () => {
@@ -20,5 +20,24 @@ describe('generoParaLaVoz', () => {
     // la guarda para no volver a preguntar.
     expect(esGenero('sin-decir')).toBe(true)
     expect(esGenero(null)).toBe(false)
+  })
+})
+
+describe('concordanciaAlTraducir', () => {
+  it('dice en qué género concordar cuando se sabe', () => {
+    expect(concordanciaAlTraducir('femenino')).toMatch(/en femenino/)
+    expect(concordanciaAlTraducir('masculino')).toMatch(/en masculino/)
+  })
+
+  it('sin saberlo, pide reformular en vez de callar', () => {
+    /*
+     * Callar no es neutral al traducir: del inglés al español hay que elegir
+     * sí o sí, y el modelo elegía a suertes. Decírselo es lo que evita que
+     * alguien que compró en inglés se encuentre tratado en el género
+     * contrario al mirar su portal en español.
+     */
+    for (const sin of [null, 'sin-decir'] as const) {
+      expect(concordanciaAlTraducir(sin)).toMatch(/reformula/)
+    }
   })
 })

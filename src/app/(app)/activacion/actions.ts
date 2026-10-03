@@ -8,6 +8,7 @@ import { nivelDeAcceso } from '@/lib/access/nivel'
 import { cartaSchema } from '@/lib/astrology/schema'
 import { asegurarActivacion } from '@/lib/lectura/activacion'
 import { diaDelCiclo } from '@/lib/lectura/ciclo'
+import { generoParaLaVoz } from '@/lib/lectura/genero'
 import { traducirMes } from '@/lib/lectura/generar-mes'
 import { asegurarMes, COLUMNAS_MES, mesEnIdioma, mesGuardado } from '@/lib/lectura/mes'
 import { createAdminClient, createClient } from '@/lib/supabase/server'
@@ -129,7 +130,7 @@ export async function escribirMes(): Promise<{
  */
 export async function traducirMesActual(): Promise<{ listo: boolean }> {
   const supabase = await createClient()
-  const { data: portal } = await supabase.from('portals').select('id').maybeSingle()
+  const { data: portal } = await supabase.from('portals').select('id, genero').maybeSingle()
   if (!portal) return { listo: false }
 
   const guardado = await mesGuardado(supabase, portal.id)
@@ -139,7 +140,7 @@ export async function traducirMesActual(): Promise<{ listo: boolean }> {
   if (mesEnIdioma(guardado.contenido, idioma)) return { listo: true }
 
   try {
-    const traducida = await traducirMes(guardado.contenido, idioma)
+    const traducida = await traducirMes(guardado.contenido, idioma, generoParaLaVoz(portal.genero))
     const { error } = await createAdminClient()
       .from('forecasts')
       .update({

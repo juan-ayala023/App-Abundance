@@ -22,7 +22,7 @@ import { createClient } from '@/lib/supabase/server'
  */
 export async function traducirLecturaActual(): Promise<{ listo: boolean }> {
   const supabase = await createClient()
-  const { data: portal } = await supabase.from('portals').select('id, base_reading').maybeSingle()
+  const { data: portal } = await supabase.from('portals').select('id, genero, base_reading').maybeSingle()
   const guardada = lecturaBaseSchema.safeParse(portal?.base_reading)
   if (!portal || !guardada.success) return { listo: false }
 
@@ -30,7 +30,7 @@ export async function traducirLecturaActual(): Promise<{ listo: boolean }> {
   if (lecturaEnIdioma(guardada.data, idioma)) return { listo: true }
 
   try {
-    const traducida = await traducirLecturaBase(guardada.data, idioma)
+    const traducida = await traducirLecturaBase(guardada.data, idioma, generoParaLaVoz(portal.genero))
     const { error } = await supabase
       .from('portals')
       .update({

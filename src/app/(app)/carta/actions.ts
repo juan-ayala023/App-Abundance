@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache'
 import { idiomaActual } from '@/i18n/idioma'
 import { entitlementDe, resolveAccess } from '@/lib/access/entitlement'
 import { nivelDeAcceso } from '@/lib/access/nivel'
+import { generoParaLaVoz } from '@/lib/lectura/genero'
 import { traducirRetrato } from '@/lib/lectura/generar-retrato'
 import { asegurarRetrato, COLUMNAS_RETRATO, retratoEnIdioma } from '@/lib/lectura/retrato'
 import { retratoSchema } from '@/lib/lectura/schemas'
@@ -40,7 +41,7 @@ export async function escribirRetrato(): Promise<{ listo: boolean; motivo?: 'sus
 /** Guarda la versión del retrato en el idioma actual de la interfaz. */
 export async function traducirRetratoActual(): Promise<{ listo: boolean }> {
   const supabase = await createClient()
-  const { data: portal } = await supabase.from('portals').select('id, chart_reading').maybeSingle()
+  const { data: portal } = await supabase.from('portals').select('id, genero, chart_reading').maybeSingle()
   const guardado = retratoSchema.safeParse(portal?.chart_reading)
   if (!portal || !guardado.success) return { listo: false }
 
@@ -48,7 +49,7 @@ export async function traducirRetratoActual(): Promise<{ listo: boolean }> {
   if (retratoEnIdioma(guardado.data, idioma)) return { listo: true }
 
   try {
-    const traducido = await traducirRetrato(guardado.data, idioma)
+    const traducido = await traducirRetrato(guardado.data, idioma, generoParaLaVoz(portal.genero))
     const { error } = await supabase
       .from('portals')
       .update({
