@@ -1,5 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server'
 
+import { idiomaActual } from '@/i18n/idioma'
+
 import { createGeoNamesProvider } from '@/lib/geo/geonames'
 import { GeocodingError } from '@/lib/geo/types'
 import { createClient } from '@/lib/supabase/server'
@@ -27,7 +29,18 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const places = await createGeoNamesProvider().search(query)
+    /*
+     * Los nombres de país salen en el idioma de quien busca.
+     *
+     * GeoNames los traduce si se le pide; sin pedirlo devolvía siempre
+     * español, así que una persona que hacía el alta en inglés guardaba
+     * «Miami, EE. UU.» y lo veía así para siempre en Mi Cuenta, rodeado de
+     * interfaz inglesa. Lo vio Juanjo probando el 3 de octubre de 2026.
+     *
+     * Solo cambia lo que se lee: la carta se calcula con latitud, longitud y
+     * zona horaria, que no dependen del idioma.
+     */
+    const places = await createGeoNamesProvider().search(query, { lang: await idiomaActual() })
     return NextResponse.json({ places })
   } catch (error) {
     if (error instanceof GeocodingError) {
