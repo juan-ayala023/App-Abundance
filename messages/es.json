@@ -278,7 +278,7 @@
     "profundizar": "Profundizar en este tema"
   },
   "generando": {
-    "duracion": "Suele tardar entre uno y tres minutos. Puedes dejar esta pantalla abierta.",
+    "duracion": "Suele tardar entre uno y tres minutos.",
     "bienvenidaTitulo": "Te damos la bienvenida a tu portal, {nombre}.",
     "bienvenidaTituloSinNombre": "Te damos la bienvenida a tu portal.",
     "bienvenidaTexto": "Tu carta y tu lectura personal ya están listas.",

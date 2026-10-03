@@ -2,6 +2,7 @@ import {
   cancelarCompra,
   envejecerPortal,
   expect,
+  ponerNombreDePerfil,
   sembrarActivacion,
   test,
 } from './fixtures'
@@ -708,6 +709,30 @@ test('el portal avisa cuando la lectura no llegó a escribirse', async ({ page }
 
   await page.getByRole('link', { name: /escribirla ahora/i }).click()
   await expect(page).toHaveURL(/\/generando/)
+})
+
+/**
+ * El portal saluda con el nombre del alta, no con el de la cuenta de correo.
+ *
+ * Son dos nombres distintos y durante un tiempo se confundieron: Andrea entró
+ * con su cuenta de Google y escribió «CAMILA» en el alta, y el portal la
+ * saludaba como Andrea mientras Mi Cuenta —y todas sus lecturas— la llamaban
+ * CAMILA. El de Google es el del dueño del buzón, que no siempre es la persona
+ * de la carta: quien regala el acceso, quien comparte el ordenador de casa.
+ */
+test('el portal saluda con el nombre que se escribió al dar los datos', async ({
+  page,
+  usuario,
+}) => {
+  await completarOnboarding(page)
+
+  // Como si hubiera entrado con una cuenta de Google a otro nombre.
+  await ponerNombreDePerfil(usuario.id, 'Otra Persona')
+
+  await page.goto('/portal')
+
+  await expect(page.getByRole('heading', { name: /bienvenida a tu portal, Persona/i })).toBeVisible()
+  await expect(page.getByText('Otra Persona')).toHaveCount(0)
 })
 
 test('el portal reúne las áreas y el cierre', async ({ page }) => {

@@ -51,6 +51,18 @@ export async function crearUsuario(etiqueta: string, conCompra: boolean): Promis
 }
 
 /**
+ * Pone un nombre en el perfil, el que trae Google al entrar.
+ *
+ * Sirve para comprobar que el portal saluda con el nombre que la persona
+ * escribió en el alta y no con el de la cuenta de correo, que son dos cosas
+ * distintas y durante un tiempo se confundieron.
+ */
+export async function ponerNombreDePerfil(userId: string, nombre: string) {
+  const { error } = await admin.from('profiles').update({ full_name: nombre }).eq('id', userId)
+  if (error) throw new Error(`No se pudo poner el nombre del perfil: ${error.message}`)
+}
+
+/**
  * Siembra la activación de un día concreto para el portal del usuario.
  *
  * Se escribe con la clave de servicio porque en producción las activaciones las

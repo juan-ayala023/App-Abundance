@@ -32,12 +32,22 @@ export default async function PortalPage() {
       .from('portals')
       // `COLUMNAS_CARTA` ya trae `birth_date` y `chart`: son las que necesita
       // `asegurarCarta` para no recalcular lo que ya está guardado.
-      .select(`${COLUMNAS_CARTA}, base_reading, created_at`)
+      .select(`${COLUMNAS_CARTA}, full_name, base_reading, created_at`)
       .maybeSingle(),
   ])
 
-  // Solo si parece un nombre de pila: «Bienvenido, Inversiones» ya pasó.
-  const nombre = nombreDePila(perfil?.full_name) ?? ''
+  /*
+   * Manda el nombre que la persona escribió al dar sus datos, no el que trajo
+   * Google.
+   *
+   * Andrea entró con su cuenta de Google y puso «CAMILA» en el alta: el portal
+   * la saludaba como Andrea y Mi Cuenta la llamaba CAMILA, que es el nombre con
+   * el que además le hablan todas sus lecturas. El de Google es el del dueño de
+   * la cuenta de correo, que no siempre es la persona de la carta.
+   *
+   * Solo si parece un nombre de pila: «Bienvenido, Inversiones» ya pasó.
+   */
+  const nombre = nombreDePila(portal?.full_name ?? perfil?.full_name) ?? ''
   const tieneDatos = Boolean(portal?.birth_date)
   const ciclo = diaDelCiclo(portal?.created_at, portal ? zonaDelPortal(portal) : null)
 
