@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 
 import { asegurarCarta, COLUMNAS_CARTA } from '@/lib/astrology/portal'
 import { asegurarLecturaBase, COLUMNAS_LECTURA } from '@/lib/lectura/portal'
+import { lecturaBaseSchema } from '@/lib/lectura/schemas'
 import { createClient } from '@/lib/supabase/server'
 
 /**
@@ -15,6 +16,20 @@ import { createClient } from '@/lib/supabase/server'
  *
  * Devuelve si hay lectura, para que la pantalla sepa cuándo pasar a `/lectura-base`.
  */
+/**
+ * ¿Hay lectura guardada? Sin generar nada.
+ *
+ * La usa el aviso de «tu lectura no llegó a escribirse» para no decirlo sin
+ * estar seguro: el render del portal puede venir de una copia precargada
+ * mientras la lectura aún se escribía. Lee una columna y responde; no llama al
+ * modelo ni escribe nada.
+ */
+export async function hayLecturaBase(): Promise<boolean> {
+  const supabase = await createClient()
+  const { data } = await supabase.from('portals').select('base_reading').maybeSingle()
+  return lecturaBaseSchema.safeParse(data?.base_reading).success
+}
+
 export async function generarLectura(): Promise<{ lista: boolean }> {
   const supabase = await createClient()
 

@@ -11,6 +11,7 @@ import { Contenedor } from '@/components/layout/contenedor'
 import { AreasDesbloqueadas } from '@/components/layout/areas-desbloqueadas'
 import { IndicadorCiclo } from '@/components/layout/indicador-ciclo'
 import { Tarjeta, TarjetaAccion } from '@/components/layout/tarjeta'
+import { AvisoFaltaLectura } from '@/components/lectura/aviso-falta-lectura'
 import { asegurarCarta, COLUMNAS_CARTA } from '@/lib/astrology/portal'
 import { diaDelCiclo } from '@/lib/lectura/ciclo'
 import { lecturaBaseSchema } from '@/lib/lectura/schemas'
@@ -111,14 +112,16 @@ export default async function PortalPage() {
       ) : null}
 
       {faltaLectura ? (
-        <TarjetaAccion
-          Icono={Sparkles}
-          sobretitulo={t('faltaLecturaSobre')}
-          titulo={t('faltaLectura')}
-          descripcion={t('faltaLecturaTexto')}
-          href="/generando"
-          accion={t('faltaLecturaAccion')}
-        />
+        <AvisoFaltaLectura>
+          <TarjetaAccion
+            Icono={Sparkles}
+            sobretitulo={t('faltaLecturaSobre')}
+            titulo={t('faltaLectura')}
+            descripcion={t('faltaLecturaTexto')}
+            href="/generando"
+            accion={t('faltaLecturaAccion')}
+          />
+        </AvisoFaltaLectura>
       ) : null}
 
       {/*
