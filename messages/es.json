@@ -247,7 +247,11 @@
     },
     "generarAhora": "Escribir mi lectura ahora",
     "verContexto": "Ver el contexto astrológico",
-    "ocultarContexto": "Ocultar el contexto astrológico"
+    "ocultarContexto": "Ocultar el contexto astrológico",
+    "idiomas": {
+      "es": "español",
+      "en": "inglés"
+    }
   },
   "activacion": {
     "preparando": "Estamos preparando tu lectura de hoy. Suele tardar menos de un minuto.",

@@ -247,7 +247,11 @@
     },
     "generarAhora": "Write my reading now",
     "verContexto": "See the astrological context",
-    "ocultarContexto": "Hide the astrological context"
+    "ocultarContexto": "Hide the astrological context",
+    "idiomas": {
+      "es": "Spanish",
+      "en": "English"
+    }
   },
   "activacion": {
     "preparando": "We're preparing today's reading. It usually takes less than a minute.",

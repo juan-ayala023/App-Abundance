@@ -7,7 +7,6 @@ import { useState } from 'react'
 
 /* No se importa de '@/i18n/idioma': es server-only (lee cookies). */
 type Idioma = 'es' | 'en'
-const NOMBRE_IDIOMA: Record<Idioma, string> = { es: 'español', en: 'English' }
 
 /**
  * «Esta lectura se escribió en español. Ver en inglés.»
@@ -29,7 +28,18 @@ export function AvisoIdioma({
   const router = useRouter()
   const [estado, setEstado] = useState<'inicial' | 'traduciendo' | 'error'>('inicial')
 
-  const nombres = { idioma: NOMBRE_IDIOMA[escritoEn], destino: NOMBRE_IDIOMA[actual] }
+  /*
+   * El nombre del idioma, traducido.
+   *
+   * Antes salía cada uno escrito en su propia lengua —«Esta lectura se
+   * escribió en English»—, que es lo correcto en el selector, donde quien no
+   * entiende español tiene que reconocer su idioma, y lo incorrecto dentro de
+   * una frase. Aquí la frase manda.
+   */
+  const nombres = {
+    idioma: t(`idiomas.${escritoEn}` as never),
+    destino: t(`idiomas.${actual}` as never),
+  }
 
   const pedir = async () => {
     setEstado('traduciendo')
