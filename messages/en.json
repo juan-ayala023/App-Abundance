@@ -318,7 +318,7 @@
     "error": "We couldn't prepare your reading.",
     "errorTexto": "Try again in a few minutes; your details and your chart are saved.",
     "lista": "Your reading is ready. Opening it…",
-    "esperando": "Interpreting your chart. It's the longest of the {total} steps: it can take two or three minutes, don't close this page.",
+    "esperando": "Interpreting your chart. It's the longest of the {total} steps: it can take two or three minutes. You can stay or leave — it keeps writing either way, and you'll find it finished when you come back.",
     "paso": "Step {n} of {total}",
     "progresoLabel": "Your reading's progress",
     "titulo": "Preparing your reading",

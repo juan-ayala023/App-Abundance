@@ -318,7 +318,7 @@
     "error": "No hemos podido preparar tu lectura.",
     "errorTexto": "Vuelve a intentarlo en unos minutos; tus datos y tu carta están guardados.",
     "lista": "Tu lectura está lista. Abriéndola…",
-    "esperando": "Interpretando tu carta. Es el paso más largo de los {total}: puede tardar dos o tres minutos, no cierres esta página.",
+    "esperando": "Interpretando tu carta. Es el paso más largo de los {total}: puede tardar dos o tres minutos. Puedes quedarte o irte — se sigue escribiendo igual, y la encontrarás terminada al volver.",
     "paso": "Paso {n} de {total}",
     "progresoLabel": "Progreso de tu lectura",
     "titulo": "Preparando tu lectura",
