@@ -245,6 +245,44 @@ describe("consultarEstado", () => {
   });
 });
 
+/**
+ * El aviso a soporte no puede estropear lo que la persona pidió.
+ *
+ * Se llama después de guardar su solicitud de corrección: si el correo falla,
+ * lo que no puede pasar es que la pantalla le diga que algo salió mal, porque
+ * su petición ya está a salvo.
+ */
+describe("avisarASoporte", () => {
+  it("manda el aviso firmado con el secreto compartido", async () => {
+    const fetchFalso = vi.fn().mockResolvedValue(responder(200, { sent: true }));
+    vi.stubGlobal("fetch", fetchFalso);
+
+    const { avisarASoporte } = await importarModulo();
+    expect(
+      await avisarASoporte({
+        tipo: "correccion",
+        email: "maria@gmail.com",
+        datos: { Correo: "maria@gmail.com" },
+      }),
+    ).toBe(true);
+
+    const [url, init] = fetchFalso.mock.calls[0]!;
+    expect(url).toBe("https://api.abundacecode.test/api/notify");
+    expect((init.headers as Record<string, string>).Authorization).toBe(
+      "Bearer secreto-de-prueba",
+    );
+  });
+
+  it("si el correo falla, lo dice en falso y no revienta", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("sin red")));
+
+    const { avisarASoporte } = await importarModulo();
+    expect(
+      await avisarASoporte({ tipo: "correccion", datos: {} }),
+    ).toBe(false);
+  });
+});
+
 describe("urlDelPortalDeFacturacion", () => {
   it("devuelve la url de Stripe", async () => {
     const fetchFalso = vi

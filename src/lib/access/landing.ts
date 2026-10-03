@@ -313,3 +313,43 @@ export async function urlDelPortalDeFacturacion(
     return { ok: false, motivo: "error" };
   }
 }
+
+/**
+ * Un aviso al buzón de soporte, enviado por el backend.
+ *
+ * Esta app no manda correos —quien tiene Resend es él— y hay cosas que solo
+ * sabe ella: una solicitud de corrección de datos de nacimiento se guardaba en
+ * su tabla y nadie se enteraba hasta que alguien entraba a mirarla.
+ *
+ * **No lanza nunca.** Lo que no puede fallar es lo que la persona pidió: su
+ * solicitud ya está guardada cuando esto se llama. Si el correo no sale, se
+ * anota en el log y la persona no se entera de un problema que no es suyo.
+ */
+export async function avisarASoporte(aviso: {
+  tipo: "correccion";
+  email?: string;
+  datos: Record<string, string>;
+  nota?: string;
+}): Promise<boolean> {
+  if (!integracionConfigurada()) {
+    console.warn("[landing] sin integración: no se pudo avisar a soporte", aviso.tipo);
+    return false;
+  }
+
+  try {
+    const respuesta = await pedir("/api/notify", {
+      method: "POST",
+      body: JSON.stringify(aviso),
+    });
+
+    if (!respuesta.ok) {
+      console.error("[landing] aviso a soporte rechazado", respuesta.status, aviso.tipo);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error("[landing] no se pudo avisar a soporte", error);
+    return false;
+  }
+}

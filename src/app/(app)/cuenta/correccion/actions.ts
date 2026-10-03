@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 
+import { avisarASoporte } from '@/lib/access/landing'
 import { createAdminClient, createClient } from '@/lib/supabase/server'
 
 import type { EstadoCorreccion } from './estado'
@@ -58,6 +59,28 @@ export async function solicitarCorreccion(
     console.error('[correccion] no se pudo registrar', error)
     return { enviada: false, error: await textoDe('error') }
   }
+
+  /*
+   * Y que alguien se entere.
+   *
+   * Sin esto la petición vivía solo en la tabla: había que acordarse de entrar
+   * a mirarla, así que podía quedarse semanas. El aviso no bloquea ni puede
+   * tumbar la respuesta —la solicitud ya está guardada, que es lo que no se
+   * puede perder—; si el correo no sale, queda en el log.
+   */
+  const { data: perfil } = await supabase.from('profiles').select('email').maybeSingle()
+
+  void avisarASoporte({
+    tipo: 'correccion',
+    email: perfil?.email ?? undefined,
+    datos: {
+      'Correo': perfil?.email ?? '—',
+      'Lo que tenemos': datos.data.datoActual,
+      'Lo correcto': datos.data.datoCorrecto,
+      'Motivo': datos.data.motivo || '—',
+    },
+    nota: 'Al aprobarla hay que recalcular su carta: se archivan su lectura base y su retrato, y se vuelven a escribir sobre la carta nueva.',
+  })
 
   revalidatePath('/cuenta')
   return { enviada: true, error: null }
