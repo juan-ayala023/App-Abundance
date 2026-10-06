@@ -57,10 +57,13 @@ export const config = {
   matcher: [
     /*
      * Todas las rutas excepto estáticos e imágenes.
+     * `/api/health` también queda fuera: lo consulta un despliegue, no una
+     * persona, y pasarlo por el refresco de sesión sería trabajo para nada.
+     *
      * El webhook de Stripe y /api/admin se excluyen a propósito: son llamadas
      * de servidor a servidor, sin sesión de usuario, y no deben pasar por el
      * refresco de cookies.
      */
-    '/((?!_next/static|_next/image|favicon.ico|api/stripe/webhook|api/admin|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|ico)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|api/stripe/webhook|api/admin|api/health|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|ico)$).*)',
   ],
 }
