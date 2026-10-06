@@ -1,3 +1,4 @@
+import { ChevronDown } from 'lucide-react'
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
 import { redirect } from 'next/navigation'
@@ -6,7 +7,9 @@ import { idiomaActual, type Idioma } from '@/i18n/idioma'
 
 import { CartaDescargable } from '@/components/chart/boton-descargar'
 import { DoceCasas } from '@/components/chart/casas'
+import { Equilibrio } from '@/components/chart/equilibrio'
 import { NatalChart } from '@/components/chart/natal-chart'
+import { TrioPrincipal } from '@/components/chart/trio-principal'
 import { TablaPosiciones } from '@/components/chart/tabla-posiciones'
 import { Contenedor } from '@/components/layout/contenedor'
 import { AvisoPendiente, EncabezadoPagina } from '@/components/layout/encabezado-pagina'
@@ -117,14 +120,33 @@ export default async function LecturaBasePage() {
   const bloqueCarta = (
     <Tarjeta className="flex flex-col gap-6 p-8">
       {carta ? (
-        <CartaDescargable
-          nombreArchivo={`carta-natal-${portal.birth_date}`}
-          cabecera={
-            <DatosDeNacimiento portal={portal} idioma={idioma} etiqueta={tCarta('tuCartaNatal')} />
-          }
-        >
-          <NatalChart carta={carta} className="mx-auto w-full max-w-sm" />
-        </CartaDescargable>
+        <>
+          <CartaDescargable
+            nombreArchivo={`carta-natal-${portal.birth_date}`}
+            cabecera={
+              <DatosDeNacimiento portal={portal} idioma={idioma} etiqueta={tCarta('tuCartaNatal')} />
+            }
+          >
+            <NatalChart carta={carta} className="mx-auto w-full max-w-sm" />
+          </CartaDescargable>
+
+          {/*
+            El mismo conjunto que el portal: la rueda, el trío y el equilibrio.
+
+            Lo pidió Andrea (5 oct 2026) y el motivo es bueno: eran dos
+            pantallas que enseñaban la misma carta de dos formas distintas, y
+            quien venía del portal tenía que volver a situarse. Son los mismos
+            datos, calculados una vez.
+          */}
+          <div className="flex flex-col gap-5 border-t border-borde pt-6 sm:flex-row sm:gap-10">
+            <div className="flex-1">
+              <TrioPrincipal carta={carta} />
+            </div>
+            <div className="flex-1">
+              <Equilibrio carta={carta} />
+            </div>
+          </div>
+        </>
       ) : (
         <>
           <DatosDeNacimiento portal={portal} idioma={idioma} etiqueta={tCarta('tuCartaNatal')} />
@@ -142,9 +164,14 @@ export default async function LecturaBasePage() {
         volver={{ href: '/portal', texto: tNav('volverAlPortal') }}
       />
 
-      {bloqueCarta}
+      {/* La otra mitad del cartel: ver `carta/page.tsx`. */}
+      <p className="max-w-prose text-sm leading-relaxed text-tinta-suave">
+        <Link href="/carta" className="underline underline-offset-4 hover:no-underline">
+          {t('dondeLaOtra')}
+        </Link>
+      </p>
 
-      {carta ? <DoceCasas carta={carta} idioma={idioma} /> : null}
+      {bloqueCarta}
 
       {lectura.success && texto ? (
         <>
@@ -265,6 +292,30 @@ export default async function LecturaBasePage() {
           </ul>
         </>
       )}
+
+      {/*
+        Las doce casas, al final y plegadas.
+
+        Estaban entre la carta y la lectura, y ahí partían en dos lo que la
+        persona vino a leer: entre la rueda y su interpretación había doce
+        desplegables. Como material de consulta están bien; como peaje, no.
+        Petición de Andrea, 5 oct 2026.
+      */}
+      {carta ? (
+        <details className="group rounded-2xl border border-borde bg-superficie">
+          <summary className="flex cursor-pointer items-center justify-between gap-4 px-6 py-5 text-lg font-light">
+            {t('explorarCasas')}
+            <ChevronDown
+              size={18}
+              aria-hidden="true"
+              className="shrink-0 text-tinta-tenue transition-transform group-open:rotate-180"
+            />
+          </summary>
+          <div className="px-2 pb-2">
+            <DoceCasas carta={carta} idioma={idioma} />
+          </div>
+        </details>
+      ) : null}
     </Contenedor>
   )
 }

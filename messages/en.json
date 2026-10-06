@@ -253,7 +253,9 @@
     "idiomas": {
       "es": "Spanish",
       "en": "English"
-    }
+    },
+    "explorarCasas": "Explore my twelve houses",
+    "dondeLaOtra": "This is the full interpretation. The technical detail of the chart, position by position, is in Your Natal Chart."
   },
   "activacion": {
     "preparando": "We're preparing today's reading. It usually takes less than a minute.",
@@ -365,7 +367,9 @@
     "sinHoraAviso": "Your chart was calculated <b>without a birth time</b>, so it shows the planets but not the houses, the Ascendant or the Midheaven. If you ever find it out, <enlace>you can add it</enlace> and the chart is recalculated.",
     "noCalculada": "<b>We could not calculate your chart.</b> It usually means the date, time or place of birth do not fit together. Check them and we will try again.",
     "revisarDatos": "Review my birth details",
-    "tuCartaNatal": "Your birth chart"
+    "tuCartaNatal": "Your birth chart",
+    "queEsto": "This is the drawing of your sky at birth and its exact positions.",
+    "dondeLaOtra": "The full interpretation —what all of this means for you— is in your Base Reading."
   },
   "casas": {
     "titulo": "Your twelve houses",

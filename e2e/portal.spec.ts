@@ -104,23 +104,32 @@ test('la lectura base enseña sus secciones aunque no esté generada', async ({ 
  * pantalla enseñaba cinco áreas y el documento subraya «no seleccionar solo
  * cinco casas»: un descuido ahí no rompe nada y no se ve.
  */
-test('la lectura pone la carta, las casas y el texto en ese orden', async ({ page }) => {
+test('la lectura pone la carta primero y las casas al final, plegadas', async ({ page }) => {
   await completarOnboarding(page)
   await page.goto('/lectura-base')
 
   const carta = page.getByRole('img', { name: /Carta natal/ })
-  const casas = page.getByRole('heading', { name: 'Tus doce casas' })
+  const explorar = page.getByText('Explorar mis doce casas')
 
   await expect(carta).toBeVisible()
-  await expect(casas).toBeVisible()
+  await expect(explorar).toBeVisible()
 
   const arribaCarta = (await carta.boundingBox())!.y
-  const arribaCasas = (await casas.boundingBox())!.y
+  const arribaCasas = (await explorar.boundingBox())!.y
   expect(arribaCarta).toBeLessThan(arribaCasas)
 
-  // Las doce, cada una plegada y con su nombre cotidiano.
+  /*
+   * Las casas están cerradas hasta que se piden (Andrea, 5 oct 2026). Antes
+   * iban entre la carta y la lectura, y partían en dos lo que la persona vino
+   * a leer: doce desplegables de peaje entre la rueda y su interpretación.
+   */
+  /* `toHaveCount` no sirve: dentro de un <details> cerrado el contenido sigue
+     en el documento. Lo que importa es que no se vea. */
+  await expect(page.getByText('Casa 1', { exact: true })).not.toBeVisible()
+  await explorar.click()
+
   const filas = page.getByRole('group')
-  await expect(filas).toHaveCount(12)
+  await expect(filas).toHaveCount(13) // las doce casas, dentro del desplegable
   await expect(page.getByText('Casa 1', { exact: true })).toBeVisible()
   await expect(page.getByText('Casa 12', { exact: true })).toBeVisible()
 
@@ -129,7 +138,7 @@ test('la lectura pone la carta, las casas y el texto en ese orden', async ({ pag
    * si el desplegable no funcionara, la explicación estaría en el HTML y nadie
    * podría leerla.
    */
-  const septima = page.getByRole('group').nth(6)
+  const septima = page.getByRole('group').nth(7)
   await septima.getByRole('button').or(septima.locator('summary')).first().click()
   await expect(septima.getByText(/empieza en \d+° de /i)).toBeVisible()
 })

@@ -253,7 +253,9 @@
     "idiomas": {
       "es": "español",
       "en": "inglés"
-    }
+    },
+    "explorarCasas": "Explorar mis doce casas",
+    "dondeLaOtra": "Esta es la interpretación completa. El detalle técnico de la carta, posición por posición, está en Tu Carta Natal."
   },
   "activacion": {
     "preparando": "Estamos preparando tu lectura de hoy. Suele tardar menos de un minuto.",
@@ -365,7 +367,9 @@
     "sinHoraAviso": "Tu carta se calculó <b>sin hora de nacimiento</b>, así que muestra las posiciones de los planetas pero no las casas, el ascendente ni el medio cielo. Si algún día la averiguas, <enlace>puedes añadirla</enlace> y se recalcula.",
     "noCalculada": "<b>No hemos podido calcular tu carta.</b> Suele deberse a que la fecha, la hora o el lugar de nacimiento no encajan entre sí. Revísalos y volvemos a intentarlo.",
     "revisarDatos": "Revisar mis datos de nacimiento",
-    "tuCartaNatal": "Tu carta natal"
+    "tuCartaNatal": "Tu carta natal",
+    "queEsto": "Aquí está el dibujo de tu cielo al nacer y sus posiciones exactas.",
+    "dondeLaOtra": "La interpretación completa —qué significa todo esto para ti— está en tu Lectura Base."
   },
   "casas": {
     "titulo": "Tus doce casas",

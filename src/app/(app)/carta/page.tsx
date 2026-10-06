@@ -103,6 +103,21 @@ export default async function CartaPage() {
         <p className="text-sm opacity-70">
           {portal.birth_city} · {fechaDeCalendario(portal.birth_date, idioma)}
         </p>
+
+        {/*
+          Qué es esta pantalla y dónde está la otra.
+
+          Andrea lo pidió con razón (5 oct 2026): dos recorridos que enseñan la
+          misma carta se leen como dos entregas, y quien ve el dibujo sin la
+          interpretación cree que le falta algo. Cada una dice en una línea qué
+          contiene y dónde está su mitad.
+        */}
+        <p className="max-w-prose text-sm leading-relaxed text-tinta-suave">
+          {t('queEsto')}{' '}
+          <Link href="/lectura-base" className="underline underline-offset-4 hover:no-underline">
+            {t('dondeLaOtra')}
+          </Link>
+        </p>
       </header>
 
       {carta ? (
