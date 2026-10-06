@@ -277,7 +277,8 @@
     "descripcionMes": "What moves this month, when, and in which area of your life.",
     "pestanas": "Your two readings",
     "pestanaHoy": "My reading of today",
-    "pestanaMes": "My reading of the month"
+    "pestanaMes": "My reading of the month",
+    "vigencia": "This reading covers {periodo}. The next one will be written on {siguiente}."
   },
   "guia": {
     "titulo": "Personal Guidance",
@@ -459,7 +460,7 @@
     "aunNo": "You haven't asked for your reading of the month yet",
     "queEs": "We calculate the transits of the next 30 days over your chart and find the dates where they cluster. Then we tell you what your month is about: what starts to move, how it unfolds, what could happen in each area and which days are worth watching. It takes two or three minutes and stays saved for the whole period.",
     "escribir": "Prepare my reading of the month",
-    "escribiendo": "Calculating this month's transits and writing your reading… it usually takes two or three minutes. Don't close this page.",
+    "escribiendo": "Calculating this month's transits and writing your reading. It usually takes one to two minutes.",
     "noDisponible": "We couldn't prepare your reading of the month right now. You can try again.",
     "reintentar": "Try again",
     "sinCarta": "Your reading of the month will arrive as soon as your chart is calculated.",
@@ -489,7 +490,9 @@
       "media": "Medium intensity",
       "observar": "To watch"
     },
-    "aviso": "The dates come from calculating the real transits over your chart. What's described are possibilities with astrological grounding, not guaranteed facts: the decision, and the meaning of whatever happens, remain yours."
+    "aviso": "The dates come from calculating the real transits over your chart. What's described are possibilities with astrological grounding, not guaranteed facts: the decision, and the meaning of whatever happens, remain yours.",
+    "puedesIrte": "You can keep browsing or close this: it keeps writing, and you will find it here when you come back.",
+    "fechasDestacadas": "Key dates:"
   },
   "retrato": {
     "escribir": "Write my portrait",

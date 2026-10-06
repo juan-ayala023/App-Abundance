@@ -75,7 +75,37 @@ export async function mesGuardado(supabase: Cliente, portalId: string): Promise<
  * mirar, y si el cálculo del periodo o el modelo fallan, la pantalla lo dice
  * y ofrece reintentar — nunca se queda en blanco.
  */
-export async function asegurarMes(supabase: Cliente, portal: PortalParaMes): Promise<MesVigente | null> {
+/**
+ * Lo que ya se está escribiendo, por portal.
+ *
+ * Desde octubre de 2026 la lectura del mes se lanza sola al entrar en el
+ * horóscopo, y eso abre la puerta a pedirla dos veces: una desde la vista de
+ * hoy y otra al cambiar a la del mes antes de que termine. Serían dos textos
+ * escritos para la misma persona y el mismo periodo, con el coste doble y el
+ * segundo pisando al primero.
+ *
+ * La segunda llamada se engancha a la promesa de la primera y espera su
+ * resultado. Vale mientras haya un solo proceso sirviendo —que es el caso— y
+ * si algún día hay varios, lo peor que pasa es volver al problema de hoy: dos
+ * generaciones, no una corrupción.
+ */
+const enCurso = new Map<string, Promise<MesVigente | null>>()
+
+export async function asegurarMes(
+  supabase: Cliente,
+  portal: PortalParaMes,
+): Promise<MesVigente | null> {
+  const yaEmpezada = enCurso.get(portal.id)
+  if (yaEmpezada) return yaEmpezada
+
+  const trabajo = escribirMesDePortal(supabase, portal).finally(() => {
+    enCurso.delete(portal.id)
+  })
+  enCurso.set(portal.id, trabajo)
+  return trabajo
+}
+
+async function escribirMesDePortal(supabase: Cliente, portal: PortalParaMes): Promise<MesVigente | null> {
   const vigente = await mesGuardado(supabase, portal.id)
   if (vigente) return vigente
 

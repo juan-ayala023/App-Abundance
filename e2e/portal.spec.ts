@@ -169,7 +169,17 @@ test('el menú tiene cinco entradas y la lectura del mes está en Activación', 
 
   await pestanas.getByRole('link', { name: 'Mi lectura del mes' }).click()
   await expect(page).toHaveURL(/vista=mes/)
-  await expect(page.getByRole('button', { name: /preparar mi lectura del mes/i })).toBeVisible()
+
+  /*
+   * Y empieza a escribirse sola: ya no hay botón que pulsar (Andrea, 5 oct
+   * 2026). Aquí no hay clave de IA, así que la generación falla y lo que se ve
+   * es el aviso con su reintento — pero lo que se comprueba es que nadie tuvo
+   * que pedirla.
+   */
+  await expect(page.getByRole('button', { name: /preparar mi lectura del mes/i })).toHaveCount(0)
+  await expect(
+    page.getByText(/escribiendo tu lectura|no hemos podido preparar/i).first(),
+  ).toBeVisible({ timeout: 15_000 })
 
   /*
    * Y la dirección anterior sigue funcionando. Se dio durante un día: había

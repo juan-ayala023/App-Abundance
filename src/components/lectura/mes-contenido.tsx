@@ -34,8 +34,17 @@ export async function MesContenido({ texto, idioma }: { texto: MesTexto; idioma:
 
   return (
     <>
-      {/* 1 y 2. El tema del mes y lo que empieza a moverse. */}
-      <Tarjeta className="flex flex-col gap-4 bg-oro-palido/40">
+      {/*
+        El resumen, de una pieza.
+
+        Andrea lo pidió así (5 oct 2026): tema central, oportunidad, precaución
+        y las fechas señaladas, todo en lo primero que se ve. Antes la
+        oportunidad y la advertencia estaban al final, a dos pantallas de
+        distancia del tema que explican, y las fechas había que ir a buscarlas.
+        Quien abre su lectura del mes quiere saber de qué va su mes; el resto es
+        el desarrollo de eso.
+      */}
+      <Tarjeta className="flex flex-col gap-5 bg-oro-palido/40">
         <h2 className="flex items-start gap-3 text-2xl font-light leading-snug">
           <Sparkles size={20} className="mt-1.5 shrink-0 text-oro" aria-hidden="true" />
           {texto.titular}
@@ -43,11 +52,58 @@ export async function MesContenido({ texto, idioma }: { texto: MesTexto; idioma:
         <div className="flex max-w-prose flex-col gap-3 leading-relaxed text-tinta-suave">
           <p>{texto.temaPrincipal}</p>
         </div>
+
+        <div className="grid gap-4 border-t border-oro-claro/60 pt-5 md:grid-cols-2">
+          <div className="flex flex-col gap-1.5">
+            <h3 className="text-sm font-medium">{t('oportunidad')}</h3>
+            <p className="text-sm leading-relaxed text-tinta-suave">{texto.oportunidad}</p>
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <h3 className="text-sm font-medium">{t('advertencia')}</h3>
+            <p className="text-sm leading-relaxed text-tinta-suave">{texto.advertencia}</p>
+          </div>
+        </div>
+
+        {/* Las fechas, de un vistazo. El detalle de cada una va más abajo. */}
+        {texto.diasImportantes.length > 0 ? (
+          <div className="flex flex-wrap items-center gap-2 border-t border-oro-claro/60 pt-5">
+            <span className="text-sm font-medium">{t('fechasDestacadas')}</span>
+            {texto.diasImportantes.map((dia) => (
+              <span
+                key={dia.id}
+                className="rounded-full border border-oro-claro bg-superficie px-3 py-1 text-sm tabular-nums"
+              >
+                {diaCorto(dia.fecha, idioma)}
+              </span>
+            ))}
+          </div>
+        ) : null}
       </Tarjeta>
 
       <Bloque titulo={t('queEmpiezaAMoverse')} cuerpo={texto.queEmpiezaAMoverse} />
 
-      {/* 3, 4 y 5. El mes por tercios. */}
+      <section className="flex flex-col gap-4">
+        <h2 className="text-lg font-light">{t('porAreas')}</h2>
+        <div className="grid gap-4 md:grid-cols-2">
+          {areas.map(({ clave, texto: cuerpo }) => (
+            <Tarjeta key={clave} className="flex flex-col gap-2">
+              <h3 className="text-base font-medium">{t(clave)}</h3>
+              <p className="leading-relaxed text-tinta-suave">{cuerpo}</p>
+            </Tarjeta>
+          ))}
+        </div>
+      </section>
+
+      {/* 10. Las fechas importantes, con sus días calculados. */}
+
+      {/*
+        La evolución, después de las áreas.
+
+        El orden lo pidió Andrea: primero qué pasa en cada parcela de la vida
+        —que es lo que la gente busca— y después cómo se mueve el mes de
+        principio a fin. Antes iba al revés y se leía como un prólogo largo
+        antes de llegar a lo concreto.
+      */}
       <section className="flex flex-col gap-4">
         <h2 className="text-lg font-light">{t('comoAvanza')}</h2>
         <div className="grid gap-4 lg:grid-cols-3">
@@ -63,19 +119,7 @@ export async function MesContenido({ texto, idioma }: { texto: MesTexto; idioma:
       </section>
 
       {/* 6 a 9. Las cuatro áreas. */}
-      <section className="flex flex-col gap-4">
-        <h2 className="text-lg font-light">{t('porAreas')}</h2>
-        <div className="grid gap-4 md:grid-cols-2">
-          {areas.map(({ clave, texto: cuerpo }) => (
-            <Tarjeta key={clave} className="flex flex-col gap-2">
-              <h3 className="text-base font-medium">{t(clave)}</h3>
-              <p className="leading-relaxed text-tinta-suave">{cuerpo}</p>
-            </Tarjeta>
-          ))}
-        </div>
-      </section>
 
-      {/* 10. Las fechas importantes, con sus días calculados. */}
       {texto.diasImportantes.length > 0 ? (
         <section className="flex flex-col gap-4">
           <h2 className="text-lg font-light">{t('diasImportantes')}</h2>
@@ -157,17 +201,6 @@ export async function MesContenido({ texto, idioma }: { texto: MesTexto; idioma:
       {/* 13, 14 y 15. */}
       <Bloque titulo={t('patronKarmico')} cuerpo={texto.patronKarmico} />
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <Tarjeta className="flex flex-col gap-2">
-          <h2 className="text-base font-medium">{t('oportunidad')}</h2>
-          <p className="leading-relaxed text-tinta-suave">{texto.oportunidad}</p>
-        </Tarjeta>
-        <Tarjeta className="flex flex-col gap-2">
-          <h2 className="text-base font-medium">{t('advertencia')}</h2>
-          <p className="leading-relaxed text-tinta-suave">{texto.advertencia}</p>
-        </Tarjeta>
-      </div>
-
       {/* 16. Con qué se queda. */}
       <Tarjeta className="flex gap-4 bg-oro-palido/40">
         <Insignia Icono={Compass} />
@@ -208,6 +241,15 @@ function Dato({ etiqueta, valor }: { etiqueta: string; valor: string }) {
 }
 
 /** «12 de octubre». Fecha de calendario: se lee en UTC a propósito. */
+/** «12 oct», para las píldoras del resumen: caben varias en una línea. */
+function diaCorto(iso: string, idioma: Idioma): string {
+  return new Date(`${iso}T12:00:00Z`).toLocaleDateString(idioma, {
+    day: 'numeric',
+    month: 'short',
+    timeZone: 'UTC',
+  })
+}
+
 function fechaLegible(iso: string, idioma: Idioma): string {
   return new Date(`${iso}T12:00:00Z`).toLocaleDateString(idioma, {
     day: 'numeric',

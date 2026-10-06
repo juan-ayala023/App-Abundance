@@ -6,6 +6,7 @@ import { redirect } from 'next/navigation'
 import { idiomaActual } from '@/i18n/idioma'
 import { cartaSchema } from '@/lib/astrology/schema'
 import { CieloDeHoy } from '@/components/chart/cielo-de-hoy'
+import { PrepararMes } from '@/components/lectura/preparar-mes'
 import { Contenedor } from '@/components/layout/contenedor'
 import { EncabezadoPagina } from '@/components/layout/encabezado-pagina'
 import { RequiereSuscripcion } from '@/components/layout/requiere-suscripcion'
@@ -96,7 +97,9 @@ export default async function ActivacionPage({
       ? await activacionGuardada(portal.id, ciclo.diaReal, idioma)
       : null
 
-  const mes = completo && vista === 'mes' ? await mesGuardado(supabase, portal.id) : null
+  /* Se consulta en las dos vistas: la de hoy necesita saber si falta para
+   * empezar a escribirlo mientras la persona lee. Es una fila, no un cálculo. */
+  const mes = completo ? await mesGuardado(supabase, portal.id) : null
   const versionDelMes = mes ? mesEnIdioma(mes.contenido, idioma) : null
 
   const fechaLegible = ciclo
@@ -148,6 +151,21 @@ export default async function ActivacionPage({
                 traducir={traducirMesActual}
               />
             ) : null}
+            {/*
+              Hasta cuándo vale y cuándo llega la siguiente.
+
+              Lo pidió Andrea (5 oct 2026) y responde a una pregunta razonable
+              que la pantalla no contestaba: una lectura que cubre treinta días
+              se lee distinto el primero que el vigésimo noveno, y sin saber
+              cuándo se renueva parece que no se renueva.
+            */}
+            <p className="text-sm text-tinta-suave">
+              {t('vigencia', {
+                periodo: periodoLegible(mes.desde, mes.hasta, idioma),
+                siguiente: fechaSuelta(mes.hasta, idioma),
+              })}
+            </p>
+
             <MesContenido texto={versionDelMes?.texto ?? mes.contenido} idioma={idioma} />
           </>
         )
@@ -161,6 +179,13 @@ export default async function ActivacionPage({
             lee justo debajo: estos son los tránsitos que tocan tu carta hoy, y
             esto es lo que significan para ti. Petición del cliente, oct 2026.
           */}
+          {/*
+            La del mes empieza a escribirse mientras se lee la de hoy. Ver
+            `preparar-mes`: no pinta nada y es lo que convierte «abrir y
+            esperar» en «abrir y leer».
+          */}
+          {!mes && portal.chart ? <PrepararMes /> : null}
+
           {carta ? <CieloDeHoy carta={carta} /> : null}
 
           <Tarjeta className="flex flex-col gap-6 p-8">
@@ -269,6 +294,15 @@ function Parte({
 }
 
 /** «del 23 de septiembre al 22 de octubre». */
+/** Un día suelto, para decir cuándo llega la siguiente lectura. */
+function fechaSuelta(iso: string, idioma: string): string {
+  return new Date(`${iso}T12:00:00Z`).toLocaleDateString(idioma, {
+    day: 'numeric',
+    month: 'long',
+    timeZone: 'UTC',
+  })
+}
+
 function periodoLegible(desde: string, hasta: string, idioma: string): string {
   const formato = (iso: string, conAnio: boolean) =>
     new Date(`${iso}T12:00:00Z`).toLocaleDateString(idioma, {

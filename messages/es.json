@@ -277,7 +277,8 @@
     "descripcionMes": "Qué se mueve este mes, cuándo y en qué área de tu vida.",
     "pestanas": "Tus dos lecturas",
     "pestanaHoy": "Mi lectura de hoy",
-    "pestanaMes": "Mi lectura del mes"
+    "pestanaMes": "Mi lectura del mes",
+    "vigencia": "Esta lectura cubre del {periodo}. La siguiente se escribirá el {siguiente}."
   },
   "guia": {
     "titulo": "Guía Personalizada",
@@ -459,7 +460,7 @@
     "aunNo": "Todavía no has pedido tu lectura del mes",
     "queEs": "Calculamos los tránsitos de los próximos 30 días sobre tu carta y encontramos las fechas en que se concentran. Después te contamos de qué va tu mes: qué empieza a moverse, cómo avanza, qué puede pasar en cada área y qué días conviene mirar. Tarda dos o tres minutos y queda guardada durante todo el periodo.",
     "escribir": "Preparar mi lectura del mes",
-    "escribiendo": "Calculando los tránsitos del mes y escribiendo tu lectura… suele tardar entre dos y tres minutos. No cierres esta página.",
+    "escribiendo": "Calculando los tránsitos del mes y escribiendo tu lectura. Suele tardar entre uno y dos minutos.",
     "noDisponible": "No hemos podido preparar tu lectura del mes ahora mismo. Puedes intentarlo de nuevo.",
     "reintentar": "Volver a intentarlo",
     "sinCarta": "Tu lectura del mes llegará en cuanto tu carta esté calculada.",
@@ -489,7 +490,9 @@
       "media": "Intensidad media",
       "observar": "Para observar"
     },
-    "aviso": "Las fechas salen del cálculo de los tránsitos reales sobre tu carta. Lo que se describe son posibilidades con respaldo astrológico, no hechos garantizados: la decisión y la lectura de lo que ocurra siguen siendo tuyas."
+    "aviso": "Las fechas salen del cálculo de los tránsitos reales sobre tu carta. Lo que se describe son posibilidades con respaldo astrológico, no hechos garantizados: la decisión y la lectura de lo que ocurra siguen siendo tuyas.",
+    "puedesIrte": "Puedes seguir navegando o cerrar: se sigue escribiendo y la encontrarás aquí al volver.",
+    "fechasDestacadas": "Fechas señaladas:"
   },
   "retrato": {
     "escribir": "Escribir mi retrato",
