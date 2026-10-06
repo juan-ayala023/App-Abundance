@@ -269,7 +269,8 @@
     "bloques": {
       "senal": "The sign",
       "evita": "Avoid",
-      "activa": "Activate"
+      "activa": "Activate",
+      "queSeMueve": "What's moving in your chart today"
     },
     "sinCarta": "Your activation will arrive as soon as your chart is calculated.",
     "siguiente": "Your next reading unlocks tomorrow.",
@@ -534,9 +535,9 @@
     "linea": "{planeta} in {signo} is {aspecto} your natal {natal}.",
     "explicacion": {
       "conjuncion": "Today {mueve} meets {tuyo}: that theme takes the front seat.",
-      "sextil": "Today {mueve} and {tuyo} find an open door: it is there, but you have to walk through it.",
+      "sextil": "Today a door opens between {mueve} and {tuyo}: a step you have been putting off may cost less.",
       "cuadratura": "Today you might feel tension between {mueve} and {tuyo}: something asks for an adjustment.",
-      "trigono": "Today {mueve} and {tuyo} fit together: that comes without effort.",
+      "trigono": "Today {mueve} and {tuyo} fit together: what you need to say comes out with less effort.",
       "oposicion": "Today {mueve} and {tuyo} pull in opposite directions: the day asks for balance."
     },
     "mueve": {

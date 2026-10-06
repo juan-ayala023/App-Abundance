@@ -153,8 +153,18 @@ export function esquemaDeTexto(claves: string[]) {
 const camposActivacion = {
   /** Frase de intriga. Es lo primero que se lee. */
   titular: parrafo,
-  /** Qué podría pasar hoy y en qué área. Dos o tres frases. */
+  /** Qué podría pasar hoy y en qué área. Tres o cuatro frases. */
   situacion: parrafo,
+  /**
+   * Qué se mueve hoy en SU carta y por qué eso lleva a lo de arriba.
+   *
+   * Nuevo el 6 de octubre de 2026, a petición del cliente: la lectura del día
+   * se leía como una frase de horóscopo con el nombre puesto. Encima de ella
+   * está «El cielo de hoy» con los tránsitos en crudo, y entre las dos faltaba
+   * el puente — qué tránsito es, qué toca de su carta, y por qué de ahí sale
+   * justo esa situación y no otra.
+   */
+  queSeMueve: parrafo,
   /** Qué conviene observar: una frase, un gesto, una repetición. */
   senal: parrafo,
   evita: parrafo,
@@ -179,8 +189,18 @@ const camposActivacion = {
  */
 export const activacionGeneradaSchema = z.object(camposActivacion)
 
+/**
+ * Lo mismo, para leer lo que ya está guardado.
+ *
+ * `queSeMueve` es obligatorio al generar y opcional al leer, por la misma razón
+ * que las tres secciones nuevas de la lectura base: las activaciones escritas
+ * antes del 6 de octubre de 2026 no lo traen, y exigirlo dejaría sin abrir un
+ * texto que alguien ya leyó. Lo nuevo se exige a lo que se escribe hoy, nunca
+ * a lo que se escribió ayer.
+ */
 export const activacionDiariaSchema = z.object({
   ...camposActivacion,
+  queSeMueve: parrafo.optional(),
   /** En qué idioma se escribió. Si falta, español (anterior al cambio). */
   idioma: idiomaContenido.optional(),
 })

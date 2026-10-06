@@ -197,6 +197,24 @@ export default async function ActivacionPage({
               {activacion.contenido.situacion}
             </p>
 
+            {/*
+              De dónde sale lo de arriba.
+
+              Las lecturas escritas antes del 6 de octubre de 2026 no lo traen,
+              así que se pinta solo cuando está: una sección vacía con su título
+              es peor que no tenerla. Ver `camposActivacion` en los esquemas.
+            */}
+            {activacion.contenido.queSeMueve ? (
+              <div className="flex flex-col gap-2 rounded-2xl bg-fondo-hondo px-5 py-4">
+                <h3 className="text-[0.65rem] uppercase tracking-[0.18em] text-tinta-tenue">
+                  {t('bloques.queSeMueve')}
+                </h3>
+                <p className="max-w-prose leading-relaxed text-tinta-suave">
+                  {activacion.contenido.queSeMueve}
+                </p>
+              </div>
+            ) : null}
+
             <div className="flex flex-col divide-y divide-borde border-t border-borde">
               <Parte
                 Icono={Eye}

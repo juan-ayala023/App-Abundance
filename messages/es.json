@@ -269,7 +269,8 @@
     "bloques": {
       "senal": "La señal",
       "evita": "Evita",
-      "activa": "Activa"
+      "activa": "Activa",
+      "queSeMueve": "Qué se mueve hoy en tu carta"
     },
     "sinCarta": "Tu activación llegará en cuanto tu carta esté calculada.",
     "siguiente": "Tu próxima lectura se desbloquea mañana.",
@@ -533,23 +534,23 @@
     "titulo": "Lo que hoy toca tu carta",
     "linea": "{planeta} en {signo} hace {aspecto} a tu {natal} natal.",
     "explicacion": {
-      "conjuncion": "{mueve} se junta hoy con {tuyo}: ese tema ocupa el primer plano.",
-      "sextil": "{mueve} y {tuyo} tienen hoy una puerta abierta: podrías sentir más facilidad para dar un paso que venías posponiendo.",
-      "cuadratura": "Hoy podrías notar tensión entre {mueve} y {tuyo}: algo pide un pequeño ajuste.",
-      "trigono": "{mueve} y {tuyo} encajan hoy: podrías sentir más facilidad para expresar lo que necesitas.",
-      "oposicion": "{mueve} y {tuyo} tiran hoy cada uno hacia un lado: el día pide equilibrio."
+      "conjuncion": "Hoy se juntan {mueve} y {tuyo}: ese tema pasa al primer plano.",
+      "sextil": "Hoy se abre una puerta entre {mueve} y {tuyo}: puede costarte menos dar un paso que venías posponiendo.",
+      "cuadratura": "Hoy puedes notar tensión entre {mueve} y {tuyo}: algo pide un pequeño ajuste.",
+      "trigono": "Hoy encajan {mueve} y {tuyo}: lo que necesitas decir sale con menos esfuerzo.",
+      "oposicion": "Hoy tiran en direcciones distintas {mueve} y {tuyo}: el día pide equilibrio."
     },
     "mueve": {
-      "sol": "La energía del día",
-      "luna": "El ánimo del día",
-      "mercurio": "Lo que se piensa y se habla",
-      "venus": "El gusto y el afecto",
-      "marte": "El empuje del día",
-      "jupiter": "Las ganas de más",
-      "saturno": "Tus responsabilidades",
-      "urano": "Lo que se sale del guion",
-      "neptuno": "La sensibilidad del día",
-      "pluton": "Lo que se remueve por debajo"
+      "sol": "la energía del día",
+      "luna": "el ánimo del día",
+      "mercurio": "lo que se piensa y se habla",
+      "venus": "el gusto y el afecto",
+      "marte": "el empuje del día",
+      "jupiter": "las ganas de más",
+      "saturno": "tus responsabilidades",
+      "urano": "lo que se sale del guion",
+      "neptuno": "la sensibilidad del día",
+      "pluton": "lo que se remueve por debajo"
     },
     "tuyo": {
       "sol": "tu identidad",

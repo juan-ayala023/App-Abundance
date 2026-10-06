@@ -55,13 +55,14 @@ describe('esquemas de generación', () => {
    * exigirlos al leer dejaría contenido que alguien ya pagó sin poder abrirse.
    */
   it('el esquema de lectura admite contenido anterior, y por eso no vale para generar', () => {
-    expect(clavesOpcionales(activacionDiariaSchema)).toEqual(['idioma'])
+    expect(clavesOpcionales(activacionDiariaSchema).sort()).toEqual(['idioma', 'queSeMueve'])
   })
 
   it('una activación recién generada vale como activación guardada', () => {
     const generada = {
       titular: 'Hoy una respuesta incompleta puede decirte más que una promesa.',
       situacion: 'Puede aparecer una conversación que deje un detalle sin cerrar.',
+      queSeMueve: 'Mercurio pasa hoy por tu casa 3, la de lo que se dice y se acuerda.',
       senal: 'Palabras entusiastas sin fecha ni compromiso concreto.',
       evita: 'Ofrecer más para conseguir claridad.',
       activa: 'Haz una pregunta directa y espera la respuesta.',
