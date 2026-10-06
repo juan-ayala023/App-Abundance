@@ -2,7 +2,7 @@
   "nav": {
     "portal": "My Portal",
     "lecturaBase": "Base Reading",
-    "activacion": "Today's Activation",
+    "activacion": "Personalised horoscope",
     "guia": "Personal Guidance",
     "cuenta": "My Account",
     "cerrarSesion": "Sign out",
@@ -178,7 +178,7 @@
     "pronosticoTitulo": "Your Forecast",
     "pronosticoTexto": "The dates over the next 30 days when areas of your life become active, and how they could show up.",
     "verPronostico": "See my forecast",
-    "activacionTitulo": "Today's Activation",
+    "activacionTitulo": "My horoscope for today",
     "activacionTexto": "A daily energetic activation to raise your frequency and align your actions.",
     "leerActivacion": "Read the full activation",
     "guia": "Personal Guidance",
@@ -261,9 +261,9 @@
     "reintentar": "Try again",
     "volverAlPortal": "Back to my portal",
     "requiereSuscripcion": "Today's reading is prepared with an active subscription. Your chart and your base reading remain yours.",
-    "titulo": "Today's Activation",
+    "titulo": "My personalised horoscope",
     "descripcion": "What could move today and which sign is worth watching.",
-    "seccion": "Daily activation",
+    "seccion": "The personalised horoscope",
     "bloques": {
       "senal": "The sign",
       "evita": "Avoid",
@@ -697,7 +697,7 @@
     "portal": "Go to my portal"
   },
   "titulos": {
-    "activacion": "Today's activation",
+    "activacion": "My personalised horoscope",
     "carta": "Your natal chart",
     "correccion": "Request a correction",
     "cuenta": "My account",

@@ -136,3 +136,37 @@ function resolver(carta: Carta, significador: Significador): AnclaDeArea | null 
     }
   }
 }
+
+/**
+ * El ancla de un área, en una línea de texto.
+ *
+ * «Casa 7 en ♐ Sagitario 12°», «☿ Mercurio en ♌ Leo 7°». Existe para poder
+ * mandarla ya resuelta al navegador: la selección de área pasó a ser una
+ * interacción del cliente, y los glifos y los nombres de signo viven en el
+ * diccionario del servidor. Devuelve cadena vacía cuando no hay ancla, y quien
+ * la pinta no enseña nada en ese caso — una casa inventada es peor que ninguna.
+ */
+export function textoDeAncla(
+  ancla: AnclaDeArea | null,
+  t: (clave: string, valores?: Record<string, string | number | Date>) => string,
+  tSignos: (clave: string) => string,
+  tCuerpos: (clave: string) => string,
+  glifoCuerpo: Record<string, string> = {},
+  glifoSigno: Record<string, string> = {},
+): string {
+  if (!ancla) return ''
+
+  const donde =
+    ancla.que === 'casa'
+      ? t('casa', { numero: ancla.numero ?? 0 })
+      : ancla.que === 'medioCielo'
+        ? t('medioCielo')
+        : tCuerpos(ancla.que)
+
+  const glifo =
+    ancla.que !== 'casa' && ancla.que !== 'medioCielo' ? `${glifoCuerpo[ancla.que] ?? ''} ` : ''
+
+  return `${glifo}${donde} ${t('en')} ${glifoSigno[ancla.signo] ?? ''} ${tSignos(ancla.signo)} ${ancla.grado}°`
+    .replace(/\s+/g, ' ')
+    .trim()
+}

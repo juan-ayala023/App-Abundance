@@ -46,7 +46,7 @@ test('la navegación lateral lleva a todas las secciones', async ({ page }) => {
 
   for (const [etiqueta, url] of [
     ['Lectura Base', /\/lectura-base/],
-    ['Activación de Hoy', /\/activacion/],
+    ['Horóscopo personalizado', /\/activacion/],
     ['Guía Personalizada', /\/guia/],
     ['Mi Cuenta', /\/cuenta/],
     ['Mi Portal', /\/portal/],
@@ -213,7 +213,7 @@ test('la activación del día se muestra sin decir qué día es', async ({
 
   await page.goto('/activacion')
 
-  await expect(page.getByRole('heading', { name: 'Activación de Hoy' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Mi horóscopo personalizado' })).toBeVisible()
   await expect(page.getByText(/activación del día/i)).toHaveCount(0)
 
   // El contenido es el del día sembrado, no el de otro ni un aviso de vacío.
@@ -712,18 +712,35 @@ test('la rueda va acompañada del Sol, la Luna y el Ascendente', async ({ page }
  * de las dos cosas posibles: los aspectos de hoy, o que hoy no hay ninguno
  * cerca. Las dos son lecturas verdaderas del día; lo que no vale es el hueco.
  */
-test('el portal enseña el cielo de hoy y el equilibrio de la carta', async ({ page }) => {
+test('el portal enseña el equilibrio de la carta, y el cielo ya no', async ({ page }) => {
   await completarOnboarding(page)
-
-  await expect(page.getByRole('heading', { name: /lo que hoy toca tu carta/i })).toBeVisible()
-  await expect(
-    page.getByText(/hace (conjunción|sextil|cuadratura|trígono|oposición) a tu|ningún planeta se acerca/i).first(),
-  ).toBeVisible()
 
   // El reparto por elementos, con su lectura en una frase.
   await expect(page.getByText('Tu equilibrio elemental')).toBeVisible()
   await expect(
     page.getByText(/predomina en tu carta|no hay ningún planeta en|reparte sus fuerzas/i).first(),
+  ).toBeVisible()
+
+  /*
+   * «El cielo de hoy» se fue al horóscopo en octubre de 2026. Se comprueba que
+   * NO está aquí, y no solo que esté allí: lo que se pidió fue moverlo, y una
+   * caja duplicada en las dos pantallas sería el fallo más fácil de cometer.
+   */
+  await expect(page.getByRole('heading', { name: /lo que hoy toca tu carta/i })).toHaveCount(0)
+})
+
+test('el cielo de hoy encabeza el horóscopo, encima de la lectura', async ({
+  page,
+  usuario,
+}) => {
+  await completarOnboarding(page)
+  await sembrarActivacion(usuario.id, 1)
+
+  await page.goto('/activacion')
+
+  await expect(page.getByRole('heading', { name: /lo que hoy toca tu carta/i })).toBeVisible()
+  await expect(
+    page.getByText(/hace (conjunción|sextil|cuadratura|trígono|oposición) a tu|ningún planeta se acerca/i).first(),
   ).toBeVisible()
 })
 
@@ -773,12 +790,14 @@ test('el portal saluda con el nombre que se escribió al dar los datos', async (
   await expect(page.getByText('Otra Persona')).toHaveCount(0)
 })
 
-test('el portal reúne las áreas y el cierre', async ({ page }) => {
+test('el portal cierra con su frase, y las áreas ya no están aquí', async ({ page }) => {
   await completarOnboarding(page)
 
-  await expect(page.getByRole('heading', { name: 'Tus cinco áreas' })).toBeVisible()
-  await expect(page.getByText('Relaciones y vínculos')).toBeVisible()
   await expect(page.getByText(/recordar tu código y alinearte con él/)).toBeVisible()
+
+  /* Las cinco áreas se fueron a la Guía (oct 2026): delante del campo de la
+   * pregunta sirven para algo, y aquí eran una tarjeta más al final. */
+  await expect(page.getByRole('heading', { name: 'Tus cinco áreas' })).toHaveCount(0)
 })
 
 /**
@@ -793,19 +812,37 @@ test('el portal reúne las áreas y el cierre', async ({ page }) => {
  * exacta y «Relaciones y vínculos» se ancla en la casa 7. Sin hora se anclaría
  * en Venus; las dos son correctas, y por eso se acepta cualquiera de las dos.
  */
-test('cada área lleva a la guía con su pregunta puesta', async ({ page }) => {
+test('cada área orienta la pregunta, y la elegida se queda a la vista', async ({ page }) => {
   await completarOnboarding(page)
+  await page.goto('/guia')
 
-  const relaciones = page.getByRole('link', { name: /relaciones y vínculos/i })
+  await expect(page.getByRole('heading', { name: 'Tus cinco áreas' })).toBeVisible()
+
+  const relaciones = page.getByRole('button', { name: /relaciones y vínculos/i })
   await expect(relaciones).toBeVisible()
 
   // El área dice dónde cae en SU carta, no una etiqueta igual para todos.
   await expect(relaciones).toContainText(/casa 7|venus/i)
 
+  /*
+   * Sin cambiar de página: elegir un área es un toque, no una recarga. Cuando
+   * esto era un enlace a `/guia?area=…` y las áreas vivían en el portal,
+   * funcionaba; al traerlas a la propia guía dejó de hacerlo —misma ruta, otro
+   * parámetro— y el campo se quedaba vacío. Por eso la selección vive ahora en
+   * el navegador.
+   */
   await relaciones.click()
-  await expect(page).toHaveURL(/\/guia\?area=relaciones/)
 
   await expect(page.getByLabel(/qué necesitas entender hoy/i)).toHaveValue(
+    '¿Qué patrón repito en mis vínculos?',
+  )
+
+  // Y sigue viéndose cuál se eligió.
+  await expect(relaciones).toHaveAttribute('aria-pressed', 'true')
+
+  // Elegir otra cambia la pregunta: el fallo que destapó todo esto.
+  await page.getByRole('button', { name: /abundancia y dinero/i }).click()
+  await expect(page.getByLabel(/qué necesitas entender hoy/i)).not.toHaveValue(
     '¿Qué patrón repito en mis vínculos?',
   )
 })

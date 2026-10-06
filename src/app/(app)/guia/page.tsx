@@ -1,17 +1,18 @@
 import { getTranslations } from 'next-intl/server'
 import { redirect } from 'next/navigation'
 
-import { FormularioConsulta } from '@/components/guia/formulario-consulta'
+import { cartaSchema } from '@/lib/astrology/schema'
+import { GLIFO_CUERPO, GLIFO_SIGNO } from '@/components/chart/glifos'
+import { AreasYConsulta } from '@/components/guia/areas-y-consulta'
 import { HistorialConsultas } from '@/components/guia/historial-consultas'
 import { Contenedor } from '@/components/layout/contenedor'
 import { EncabezadoPagina } from '@/components/layout/encabezado-pagina'
 import { RequiereSuscripcion } from '@/components/layout/requiere-suscripcion'
-import { Tarjeta } from '@/components/layout/tarjeta'
 import { entitlementDe, resolveAccess } from '@/lib/access/entitlement'
 import { nivelDeAcceso } from '@/lib/access/nivel'
 import { CONSULTAS_GUIA_POR_MES } from '@/lib/lectura/schemas'
 import { mesDeGuia } from '@/lib/lectura/guia'
-import { AREAS } from '@/lib/astrology/areas'
+import { AREAS, anclaDeArea, textoDeAncla } from '@/lib/astrology/areas'
 import { createClient } from '@/lib/supabase/server'
 import { zonaDelPortal } from '@/lib/time/dia'
 import { tituloDePagina } from '@/i18n/titulo'
@@ -47,18 +48,43 @@ export default async function GuiaPage({
 
   const { data: portal } = await supabase
     .from('portals')
-    .select('id, birth_date, birth_city, created_at, tz')
+    .select('id, birth_date, birth_city, created_at, tz, chart')
     .maybeSingle()
 
   if (!portal?.birth_date) redirect('/onboarding')
+
+  /* La carta, para que cada área diga en qué casa cae. Sin ella las áreas se
+   * enseñan igual, solo que sin su anclaje — ver `areas-desbloqueadas`. */
+  const carta = cartaSchema.safeParse(portal.chart).success
+    ? cartaSchema.parse(portal.chart)
+    : null
 
   // Pasados los 30 días sin suscripción, la guía se cierra. La lectura base no.
   const t = await getTranslations('guia')
   const tForm = await getTranslations('guia_form')
   const tNav = await getTranslations('nav')
   const tAreas = await getTranslations('areas')
+  const tSignos = await getTranslations('signos')
+  const tCuerpos = await getTranslations('cuerpos')
   const acceso = await resolveAccess()
   const nivel = nivelDeAcceso(entitlementDe(acceso))
+
+  /*
+   * Las cinco áreas, resueltas aquí y pasadas ya hechas al navegador.
+   *
+   * El texto de cada pregunta sale del diccionario del servidor y no se arma en
+   * el cliente: lo que se escriba en ese campo acaba en el prompt del modelo, y
+   * el navegador no debe poder inventar nada que llegue hasta ahí.
+   */
+  const areas = AREAS.map((area) => ({
+    clave: area.clave,
+    nombre: tAreas(area.clave as never),
+    ancla: carta
+      ? textoDeAncla(anclaDeArea(carta, area), tAreas, tSignos, tCuerpos, GLIFO_CUERPO, GLIFO_SIGNO)
+      : '',
+    pregunta: tAreas(`preguntas.${area.clave}` as never),
+  }))
+
 
   /*
    * Consultas gastadas este mes del portal —bloques de treinta días desde que
@@ -102,18 +128,22 @@ export default async function GuiaPage({
       {nivel === 'solo-lectura' ? (
         <RequiereSuscripcion seccion={t('seccion')} />
       ) : (
-        <Tarjeta className="flex flex-col gap-8">
-          <p className="text-lg italic leading-relaxed text-tinta-suave">
-            {t('intro')}
-          </p>
+        <>
+          {/*
+            Las cinco áreas, antes del campo y no después.
 
-          <FormularioConsulta
+            Estaban al final del portal, donde eran una tarjeta más. Aquí hacen
+            el trabajo para el que se escribieron: delante de un cuadro de texto
+            en blanco, lo más difícil es saber qué preguntar. Cada área lleva su
+            pregunta puesta y dice en qué casa cae en SU carta. Petición del
+            cliente, oct 2026.
+          */}
+          <AreasYConsulta
+            areas={areas}
             restantes={restantes}
-            preguntaInicial={
-              areaValida ? tAreas(`preguntas.${area}` as never) : undefined
-            }
+            inicial={areaValida ? area : null}
           />
-        </Tarjeta>
+        </>
       )}
 
       <HistorialConsultas consultas={consultas ?? []} />

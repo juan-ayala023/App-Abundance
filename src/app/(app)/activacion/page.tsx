@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
 import { idiomaActual } from '@/i18n/idioma'
+import { cartaSchema } from '@/lib/astrology/schema'
+import { CieloDeHoy } from '@/components/chart/cielo-de-hoy'
 import { Contenedor } from '@/components/layout/contenedor'
 import { EncabezadoPagina } from '@/components/layout/encabezado-pagina'
 import { RequiereSuscripcion } from '@/components/layout/requiere-suscripcion'
@@ -82,6 +84,12 @@ export default async function ActivacionPage({
   const nivel = nivelDeAcceso(entitlementDe(acceso))
   const completo = nivel === 'completo'
 
+  /* La carta, para dibujar el cielo de hoy encima de la lectura. Si no se
+   * puede leer, la lectura se enseña igual: el cielo es el porqué, no el qué. */
+  const carta = cartaSchema.safeParse(portal.chart).success
+    ? cartaSchema.parse(portal.chart)
+    : null
+
   /* Solo se lee. Escribir es cosa de los dos componentes de generación. */
   const activacion =
     completo && ciclo && vista === 'hoy'
@@ -145,6 +153,16 @@ export default async function ActivacionPage({
         )
       ) : activacion ? (
         <>
+          {/*
+            El cielo de hoy, encima de la interpretación que provoca.
+
+            Vivía en el portal, abriendo la primera pantalla. Allí era buena
+            información en el sitio equivocado; aquí es el porqué de lo que se
+            lee justo debajo: estos son los tránsitos que tocan tu carta hoy, y
+            esto es lo que significan para ti. Petición del cliente, oct 2026.
+          */}
+          {carta ? <CieloDeHoy carta={carta} /> : null}
+
           <Tarjeta className="flex flex-col gap-6 p-8">
             <h2 className="max-w-prose text-2xl font-light leading-snug">
               {activacion.contenido.titular}

@@ -2,12 +2,10 @@ import { CalendarDays, Compass, MessageCircle, Sparkles, Sun } from 'lucide-reac
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
 
-import { CieloDeHoy } from '@/components/chart/cielo-de-hoy'
 import { Equilibrio } from '@/components/chart/equilibrio'
 import { NatalChart } from '@/components/chart/natal-chart'
 import { TrioPrincipal } from '@/components/chart/trio-principal'
 import { Contenedor } from '@/components/layout/contenedor'
-import { AreasDesbloqueadas } from '@/components/layout/areas-desbloqueadas'
 import { IndicadorCiclo } from '@/components/layout/indicador-ciclo'
 import { Tarjeta, TarjetaAccion } from '@/components/layout/tarjeta'
 import { AvisoFaltaLectura } from '@/components/lectura/aviso-falta-lectura'
@@ -131,20 +129,14 @@ export default async function PortalPage() {
         lectura acababa mirando cuántos días le quedaban. El dato sigue estando,
         en Mi Cuenta, que es donde se consulta el estado de lo contratado.
 
-        Lo que ocupa ahora su lugar son las dos cosas de esta pantalla que son
-        suyas y de nadie más: el cielo de hoy sobre su carta, y su carta.
-
-        **El cielo va primero, y el orden es la decisión.** En un teléfono solo
-        se ve lo primero sin desplazar, así que lo primero debería ser lo que
-        cambia. La rueda es la misma todos los días —es su carta de nacimiento— y
-        en la tercera visita ya no dice nada nuevo; los tránsitos son distintos
-        hoy que ayer. Eso es lo que hace que volver mañana tenga sentido, y por
-        una razón astrológica en vez de por una notificación.
-
-        No cuesta una llamada al modelo: es el cielo real calculado en local, el
-        mismo que ya se usaba para escribir la activación del día.
+        Y aquí estaba «El cielo de hoy», que se fue al Horóscopo personalizado
+        en octubre de 2026. Iba primero porque era lo único que cambiaba a
+        diario, y ese razonamiento sigue siendo bueno — pero en la pantalla
+        equivocada. Quien abre su portal viene a ver lo suyo: su carta, sus
+        signos. Los tránsitos de hoy son el encabezado natural de la lectura de
+        hoy, y es ahí donde están ahora, justo encima de la interpretación que
+        provocan.
       */}
-      {carta ? <CieloDeHoy carta={carta} /> : null}
 
       {carta ? (
         <Tarjeta
@@ -278,7 +270,11 @@ export default async function PortalPage() {
         />
       </div>
 
-      <AreasDesbloqueadas carta={carta} />
+      {/*
+        «Tus cinco áreas» se fue a la Guía personalizada (oct 2026). Allí no es
+        un adorno: es lo que orienta la pregunta que se escribe justo debajo.
+        Aquí era una tarjeta más al final de una pantalla ya larga.
+      */}
 
       <p className="py-4 text-center text-sm italic text-tinta-suave">
         {t('cierre')}

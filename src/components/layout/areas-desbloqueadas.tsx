@@ -40,7 +40,20 @@ const ICONOS: Record<string, LucideIcon> = {
   relaciones: Heart,
 }
 
-export async function AreasDesbloqueadas({ carta }: { carta: Carta | null }) {
+export async function AreasDesbloqueadas({
+  carta,
+  /**
+   * El área elegida, cuando esto se enseña dentro de la Guía.
+   *
+   * La selección tiene que seguir viéndose después de pulsar: si la pregunta
+   * aparece escrita abajo y arriba nada indica de dónde salió, se lee como si
+   * el campo se hubiera rellenado solo. Petición del cliente, oct 2026.
+   */
+  activa = null,
+}: {
+  carta: Carta | null
+  activa?: string | null
+}) {
   const t = await getTranslations('areas')
 
   return (
@@ -67,8 +80,17 @@ export async function AreasDesbloqueadas({ carta }: { carta: Carta | null }) {
           return (
             <li key={clave}>
               <Link
+                /* Siempre a su área, también la que ya está elegida: volver a
+                   pulsarla repone la pregunta si se borró sin querer. Hacerla
+                   un interruptor que la quitaba sonaba fino y en la práctica
+                   era un enlace que a veces no llevaba a donde dice. */
                 href={`/guia?area=${clave}`}
-                className="flex h-full items-center gap-4 rounded-2xl border border-borde bg-fondo px-4 py-3.5 transition-colors hover:bg-fondo-hondo"
+                aria-current={clave === activa ? 'true' : undefined}
+                className={`flex h-full items-center gap-4 rounded-2xl border px-4 py-3.5 transition-colors ${
+                  clave === activa
+                    ? 'border-oro bg-oro-palido/60'
+                    : 'border-borde bg-fondo hover:bg-fondo-hondo'
+                }`}
               >
                 <span
                   aria-hidden="true"

@@ -2,7 +2,7 @@
   "nav": {
     "portal": "Mi Portal",
     "lecturaBase": "Lectura Base",
-    "activacion": "Activación de Hoy",
+    "activacion": "Horóscopo personalizado",
     "guia": "Guía Personalizada",
     "cuenta": "Mi Cuenta",
     "cerrarSesion": "Cerrar sesión",
@@ -178,7 +178,7 @@
     "pronosticoTitulo": "Tu Pronóstico",
     "pronosticoTexto": "Las fechas de los próximos 30 días en que se activan áreas de tu vida, y de qué forma podrían manifestarse.",
     "verPronostico": "Ver mi pronóstico",
-    "activacionTitulo": "Activación de Hoy",
+    "activacionTitulo": "Mi horóscopo de hoy",
     "activacionTexto": "Una lectura breve para comprender lo que sientes y elegir cómo acompañarte hoy.",
     "leerActivacion": "Leer activación completa",
     "guia": "Guía Personalizada",
@@ -261,9 +261,9 @@
     "reintentar": "Intentar de nuevo",
     "volverAlPortal": "Volver a mi portal",
     "requiereSuscripcion": "Tu lectura de hoy se prepara con una suscripción activa. Tu carta y tu lectura base siguen siendo tuyas.",
-    "titulo": "Activación de Hoy",
+    "titulo": "Mi horóscopo personalizado",
     "descripcion": "Qué podría moverse hoy y qué señal conviene mirar.",
-    "seccion": "La activación diaria",
+    "seccion": "El horóscopo personalizado",
     "bloques": {
       "senal": "La señal",
       "evita": "Evita",
@@ -697,7 +697,7 @@
     "portal": "Ir a mi portal"
   },
   "titulos": {
-    "activacion": "Activación de hoy",
+    "activacion": "Mi horóscopo personalizado",
     "carta": "Tu carta natal",
     "correccion": "Solicitar una corrección",
     "cuenta": "Mi cuenta",
