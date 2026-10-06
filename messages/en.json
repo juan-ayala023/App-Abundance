@@ -493,7 +493,8 @@
     },
     "aviso": "The dates come from calculating the real transits over your chart. What's described are possibilities with astrological grounding, not guaranteed facts: the decision, and the meaning of whatever happens, remain yours.",
     "puedesIrte": "You can keep browsing or close this: it keeps writing, and you will find it here when you come back.",
-    "fechasDestacadas": "Key dates:"
+    "fechasDestacadas": "Key dates:",
+    "verDetalle": "See this day's detail"
   },
   "retrato": {
     "escribir": "Write my portrait",

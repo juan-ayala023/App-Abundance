@@ -493,7 +493,8 @@
     },
     "aviso": "Las fechas salen del cálculo de los tránsitos reales sobre tu carta. Lo que se describe son posibilidades con respaldo astrológico, no hechos garantizados: la decisión y la lectura de lo que ocurra siguen siendo tuyas.",
     "puedesIrte": "Puedes seguir navegando o cerrar: se sigue escribiendo y la encontrarás aquí al volver.",
-    "fechasDestacadas": "Fechas señaladas:"
+    "fechasDestacadas": "Fechas señaladas:",
+    "verDetalle": "Ver el detalle de este día"
   },
   "retrato": {
     "escribir": "Escribir mi retrato",

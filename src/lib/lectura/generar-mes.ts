@@ -82,6 +82,22 @@ QUÉ VA EN CADA APARTADO
 - advertencia: lo que más fácilmente podría costarle, dicho sin miedo.
 - tresAcciones: tres, concretas y pequeñas, que salgan de todo lo anterior. Cosas que se hacen en un rato, no propósitos de vida.
 
+CADA APARTADO DICE ALGO QUE NO DIGA OTRO
+El cliente señaló que la lectura se repite entre secciones (5 oct 2026), y es
+el riesgo natural de ocho apartados sobre un mismo mes: todos tiran del mismo
+material. La regla es sencilla y se aplica al escribir cada uno.
+- **Antes de escribir un apartado, mira lo que ya has dicho.** Si lo que ibas a
+  poner ya está en otro con otras palabras, no lo pongas: busca el ángulo que
+  ese apartado tiene y nadie más.
+- Cada uno responde a su propia pregunta. El tema principal: de qué va el mes.
+  Lo que empieza a moverse: qué está nuevo y aún sin forma. Los tercios: cómo
+  cambia el tono del principio al final. Las áreas: dónde se nota, parcela por
+  parcela. Las fechas: qué días concretos. El patrón kármico: qué ciclo viejo
+  se está cerrando. La oportunidad y la advertencia: las dos caras del riesgo.
+- Lo único que puede repetirse es el **hilo** —el mes es uno solo— pero nunca
+  la frase, el ejemplo ni la escena. Si en «amor» cuentas una conversación
+  pendiente, en «mundo emocional» no vuelve esa misma conversación.
+
 ${CONTROL_CALIDAD}
 
 QUÉ NO HACES

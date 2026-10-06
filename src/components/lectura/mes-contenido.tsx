@@ -1,4 +1,4 @@
-import { CalendarDays, CircleAlert, Compass, Sparkles, Sun } from 'lucide-react'
+import { CalendarDays, ChevronDown, CircleAlert, Compass, Sparkles, Sun } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
 
 import { Insignia, Tarjeta } from '@/components/layout/tarjeta'
@@ -149,11 +149,31 @@ export async function MesContenido({ texto, idioma }: { texto: MesTexto; idioma:
 
               <p className="max-w-prose leading-relaxed text-tinta-suave">{dia.texto}</p>
 
-              <dl className="flex flex-col gap-3 rounded-2xl bg-fondo-hondo px-4 py-3 text-sm">
-                <Dato etiqueta={t('senal')} valor={dia.senal} />
-                <Dato etiqueta={t('favorece')} valor={dia.favorece} />
-                <Dato etiqueta={t('cuidadoCon')} valor={dia.cuidadoCon} />
-              </dl>
+              {/*
+                El detalle, plegado (Andrea, 5 oct 2026).
+
+                Un mes puede traer seis fechas señaladas, y cada una abría con
+                tres datos más. Desplegadas, la sección ocupaba más que el resto
+                de la lectura junta y había que pasar por encima de todas para
+                llegar al final. Lo que importa de un día —cuándo es y de qué
+                va— se sigue viendo sin pulsar; lo de dentro es para cuando esa
+                fecha llegue.
+              */}
+              <details className="group">
+                <summary className="flex cursor-pointer items-center gap-2 text-sm font-medium text-oro-hondo">
+                  {t('verDetalle')}
+                  <ChevronDown
+                    size={15}
+                    aria-hidden="true"
+                    className="transition-transform group-open:rotate-180"
+                  />
+                </summary>
+                <dl className="mt-3 flex flex-col gap-3 rounded-2xl bg-fondo-hondo px-4 py-3 text-sm">
+                  <Dato etiqueta={t('senal')} valor={dia.senal} />
+                  <Dato etiqueta={t('favorece')} valor={dia.favorece} />
+                  <Dato etiqueta={t('cuidadoCon')} valor={dia.cuidadoCon} />
+                </dl>
+              </details>
             </Tarjeta>
           ))}
         </section>
